@@ -6,34 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quinchitico Tour - Gestor Pro</title>
     
-    <!-- Iconos Font Awesome -->
+    <!-- Iconos y Estilos -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%2300cec9' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Cliente Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <!-- Fuentes Google -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Icono App -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%2300cec9' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
-
     <style>
-        /* --- ESTILOS BASES (DEL ORIGINAL FUNCIONAL) --- */
         :root {
-            --primary: #00cec9;
-            --primary-dark: #00b894;
-            --secondary: #0984e3;
-            --accent: #fdcb6e;
-            --danger: #ff7675;
-            --dark: #2d3436;
-            --light: #f5f6fa;
-            --white: #ffffff;
-            --gray: #b2bec3;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --radius: 12px;
+            --primary: #00cec9; --secondary: #0984e3; --accent: #fdcb6e;
+            --danger: #ff7675; --dark: #2d3436; --light: #f5f6fa;
+            --white: #ffffff; --gray: #b2bec3; --radius: 12px;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--light); color: var(--dark); padding-bottom: 100px; }
 
         header {
@@ -41,30 +26,23 @@
             color: var(--white);
             padding: 2rem 1rem;
             text-align: center;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         header h1 { font-size: 2rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
         header p { font-size: 1rem; opacity: 0.9; }
 
         .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
-
-        /* --- DASHBOARD & SETUP --- */
-        .card {
-            background: var(--white); padding: 2rem; border-radius: var(--radius);
-            box-shadow: var(--shadow); margin-top: 1rem; text-align: center;
-        }
+        .card { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 1rem; text-align: center; }
 
         .form-group { margin-bottom: 1rem; text-align: left; }
         .form-row { display: flex; gap: 1rem; }
         .form-row .form-group { flex: 1; }
 
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark); font-size: 0.9rem; }
-
         input, select, textarea {
             width: 100%; padding: 0.7rem; border: 2px solid #dfe6e9; border-radius: 8px; font-size: 0.95rem; transition: 0.3s;
         }
@@ -88,7 +66,7 @@
             background: #f8f9fa; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem;
             text-align: left; cursor: pointer; transition: 0.2s; position: relative;
         }
-        .trip-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .trip-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .trip-card h3 { color: var(--dark); margin-bottom: 0.5rem; }
         .trip-card p { color: var(--gray); font-size: 0.85rem; margin-bottom: 0.2rem; }
         .trip-card-actions { position: absolute; top: 10px; right: 10px; }
@@ -97,10 +75,9 @@
 
         /* --- PANEL PLANIFICADOR --- */
         #planner-panel { display: none; animation: fadeIn 0.5s ease-in; }
-
         .trip-header-info {
             background: var(--white); padding: 1rem; border-radius: var(--radius);
-            box-shadow: var(--shadow); margin-bottom: 1rem; display: flex; justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 10px;
         }
         .trip-title { font-size: 1.3rem; color: var(--secondary); font-weight: 800; }
@@ -108,17 +85,13 @@
         .btn-back { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; cursor: pointer; margin-right: 10px; }
 
         /* --- TABS & ACTIVITIES --- */
-        .tabs-wrapper { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-top: 1rem; }
+        .tabs-wrapper { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; margin-top: 1rem; }
         .tabs-nav { display: flex; background: #f1f2f6; overflow-x: auto; border-bottom: 2px solid #dfe6e9; position: sticky; top: 0; z-index: 10; }
         .tabs-nav::-webkit-scrollbar { height: 4px; }
         .tab-btn { padding: 1rem 1.2rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: var(--gray); white-space: nowrap; transition: 0.3s; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; min-width: 90px; }
         .tab-btn:hover { background: #e0e0e0; color: var(--dark); }
         .tab-btn.active { color: var(--primary); background: white; border-bottom: 3px solid var(--primary); }
         .tab-date { font-size: 0.75rem; font-weight: normal; margin-top: 2px; }
-
-        /* Styles for summary tab */
-        .tab-btn.summary-tab { border-left: 2px solid #dfe6e9; margin-left: 5px; }
-        .tab-btn.summary-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
         /* Activity List */
         .day-total-header { background: #e0f7fa; border: 1px solid #b2bec3; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; overflow: hidden; }
@@ -138,7 +111,6 @@
         .activity-details { flex-grow: 1; }
         .activity-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 8px; }
         .activity-meta { font-size: 0.9rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem; }
-        .activity-link { color: var(--secondary); text-decoration: none; font-weight: 600; }
         .activity-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
         .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px; }
         .btn-edit { background: #e0f7fa; color: var(--secondary); }
@@ -154,28 +126,20 @@
         /* SECCIONES NUEVAS (GASTOS) */
         .shared-expenses-box { border: 1px solid #fdcb6e; background: #fffbf0; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
         .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .expense-row-list { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; }
+        .expense-row-list { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
+        .expense-row-list:hover { background: rgba(0,0,0,0.02); }
 
         /* Summary Styles */
-        .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
         .summary-title { font-size: 1.5rem; color: var(--secondary); margin-bottom: 1.5rem; font-weight: bold; }
         .big-totals { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; }
         .big-total-item { flex: 1; min-width: 150px; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
         .bt-label { display: block; font-size: 0.9rem; color: var(--gray); text-transform: uppercase; margin-bottom: 0.5rem; }
         .bt-value { display: block; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
-        .bt-value.usd { color: var(--secondary); }
-        .bt-value.crc { color: var(--primary); }
-        .bt-value.local { color: var(--accent); }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; text-align: left; }
-        .breakdown-section h3 { font-size: 1.1rem; color: var(--dark); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #eee; }
-        .breakdown-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px dashed #eee; }
-        .cat-name { font-weight: 600; display: flex; align-items: center; gap: 8px;}
-        .cat-val { font-weight: bold; color: var(--secondary); }
 
         /* --- FLOATING BAR --- */
         .floating-summary { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--dark); color: white; padding: 0.8rem 2rem; display: flex; justify-content: center; align-items: center; gap: 0.3rem; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); z-index: 100; }
         .floating-summary .total-amount { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
-        .floating-summary .total-crc { font-size: 1rem; color: var(--primary); font-weight: bold; margin-left: 15px; }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
@@ -187,14 +151,12 @@
 
         /* Auth Specific */
         .auth-container { max-width: 400px; margin: 50px auto; }
-        .user-badge { 
-            position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2);
-            padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px;
-        }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; }
         .status-dot.connected { background: #2ecc71; }
         .admin-only-btn { display: none; }
         .admin-mode .admin-only-btn { display: inline-block; }
+        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .user-list-actions button { margin-left: 5px; font-size: 0.8rem; padding: 4px 8px; }
 
         /* Toast */
         .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s; }
@@ -206,18 +168,18 @@
 
         @media (max-width: 600px) {
             header h1 { font-size: 1.5rem; }
-            .summary-grid { grid-template-columns: 1fr; }
         }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <header>
-        <div id="connection-status-badge" style="display:none;">
-            <div class="status-dot" id="status-dot"></div> <span id="status-text">Conectado</span>
+        <div id="connection-status-badge" style="position:absolute; top:1rem; right:1rem; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:15px; font-size:0.8rem; display:flex; align-items:center; gap:5px;">
+            <div class="status-dot" id="status-dot"></div> <span id="status-text">Desconectado</span>
         </div>
         <h1><i class="fas fa-plane-departure"></i> Quinchitico Tour</h1>
-        <p id="header-subtitle">Planificador Inteligente</p>
+        <p>Planifica y gestiona tus viajes</p>
     </header>
 
     <!-- 1. AUTH / LOGIN PANEL -->
@@ -229,7 +191,7 @@
                 <div class="form-group"><input type="password" id="login-pass" placeholder="Contraseña" required></div>
                 <button type="submit" class="btn-primary">Ingresar</button>
             </form>
-            <button class="btn-secondary" style="width:100%; margin-top:10px;" onclick="showRegister()">Crear Cuenta</button>
+            <button class="btn-secondary" style="width:100%; margin-top:10px;" onclick="openModal('register-modal')">Crear Cuenta</button>
             <button class="btn-secondary" style="width:100%; margin-top:5px; font-size:0.8rem;" onclick="resetConnection()">Cambiar BD</button>
         </div>
     </div>
@@ -239,7 +201,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
             <h2>Mis Viajes</h2>
             <button id="btn-manage-users" class="btn-primary admin-only-btn" onclick="openUserModal()" style="width:auto; padding:0.5rem 1rem; font-size:0.9rem;">
-                <i class="fas fa-users"></i> Usuarios
+                <i class="fas fa-users-cog"></i> Usuarios
             </button>
         </div>
         
@@ -255,8 +217,8 @@
     <!-- 3. FORMULARIO NUEVO VIAJE -->
     <div class="container" id="setup-trip-form" style="display:none;">
         <div class="card" style="text-align:left;">
-            <h2 style="margin-bottom: 1rem; cursor:pointer;" onclick="backToDashboard()">
-                <i class="fas fa-arrow-left"></i> Crear Nuevo Viaje
+            <h2 style="margin-bottom: 1rem; cursor:pointer; color:var(--secondary);" onclick="backToDashboard()">
+                <i class="fas fa-arrow-left"></i> Volver / Cancelar
             </h2>
             <form id="trip-form" onsubmit="handleCreateTrip(event)">
                 <div class="form-group">
@@ -394,6 +356,46 @@
         </div>
     </div>
 
+    <!-- MODAL GESTION USUARIOS (ADMIN) -->
+    <div class="modal-overlay" id="users-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Gestionar Usuarios</h3>
+                <button class="close-modal" onclick="closeModal('users-modal')">&times;</button>
+            </div>
+            
+            <form onsubmit="handleUserSubmit(event)">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group"><label>Nombre</label><input type="text" id="user-name" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="user-email" required></div>
+                <div class="form-group"><label>Contraseña</label><input type="password" id="user-pass" placeholder="Dejar vacío para mantener actual" ></div>
+                <button type="submit" class="btn-primary">Guardar Usuario</button>
+                <button type="button" class="btn-secondary" style="width:100%; margin-top:10px;" onclick="clearUserForm()">Limpiar / Crear Nuevo</button>
+            </form>
+            
+            <hr style="margin: 1.5rem 0;">
+            <h4>Usuarios Existentes (Clic para editar)</h4>
+            <ul id="users-list-ul" style="list-style:none; max-height:200px; overflow-y:auto; font-size:0.9rem; padding:0;"></ul>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO -->
+    <div class="modal-overlay" id="register-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Crear Cuenta</h3>
+                <button class="close-modal" onclick="closeModal('register-modal')">&times;</button>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group"><label>Nombre</label><input type="text" id="reg-name" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                <div class="form-group"><label>Contraseña</label><input type="password" id="reg-pass" required></div>
+                <button type="submit" class="btn-primary">Registrarse</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('register-modal')" style="width:100%; margin-top:10px;">Volver</button>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL GASTO COMPARTIDO (ADMIN) -->
     <div class="modal-overlay" id="shared-expense-modal">
         <div class="modal">
@@ -420,40 +422,6 @@
                 <div class="form-group"><label>Descripción</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Compras" required></div>
                 <div class="form-group"><label>Costo</label><input type="number" id="personal-cost" step="0.01" required></div>
                 <button type="submit" class="btn-primary">Guardar</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL GESTION USUARIOS (ADMIN) -->
-    <div class="modal-overlay" id="users-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Gestionar Usuarios</h3>
-                <button class="close-modal" onclick="closeModal('users-modal')">&times;</button>
-            </div>
-            <form onsubmit="adminCreateUser(event)">
-                <div class="form-group"><label>Nombre</label><input type="text" id="new-user-name" required></div>
-                <div class="form-group"><label>Email</label><input type="email" id="new-user-email" required></div>
-                <div class="form-group"><label>Contraseña</label><input type="password" id="new-user-pass" required></div>
-                <button type="submit" class="btn-primary">Crear Usuario</button>
-            </form>
-            <h4 style="margin-top:1rem; margin-bottom:0.5rem;">Usuarios Existentes</h4>
-            <ul id="users-list-ul" style="list-style:none; max-height:150px; overflow-y:auto; font-size:0.9rem;"></ul>
-        </div>
-    </div>
-
-    <!-- MODAL REGISTRO -->
-    <div class="modal-overlay" id="register-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Crear Cuenta</h3>
-                <button class="close-modal" onclick="closeModal('register-modal')">&times;</button>
-            </div>
-            <form onsubmit="handleRegister(event)">
-                <div class="form-group"><label>Nombre</label><input type="text" id="reg-name" required></div>
-                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
-                <div class="form-group"><label>Contraseña</label><input type="password" id="reg-pass" required></div>
-                <button type="submit" class="btn-primary">Registrarse</button>
             </form>
         </div>
     </div>
@@ -490,43 +458,31 @@
         let currentUser = null;
         let currentTripId = null;
         
-        // Estructura de datos del viaje (actividades, días, etc)
         let appData = {
             destination: "", startDate: "", endDate: "", currencySymbol: "$", exchangeRate: 1, crcRate: 540, days: []
         };
-        
-        // Datos de gastos compartidos (del viaje)
         let sharedExpenses = [];
-        // Datos de gastos personales (del usuario actual en el viaje)
         let personalExpenses = [];
-        
         let activeDayIndex = 0;
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // Intentar conectar con las credenciales automáticas o guardadas
             const url = localStorage.getItem('supa_url') || AUTO_URL;
             const key = localStorage.getItem('supa_key') || AUTO_KEY;
 
             try {
                 const { createClient } = window.supabase;
                 supabaseClient = createClient(url, key);
-                
-                // Test connection
                 const { error } = await supabaseClient.from('app_users').select('id').limit(1);
-                
                 if(error) throw error;
 
-                // Conexión Exitosa
                 document.getElementById('connection-status-badge').style.display = 'flex';
                 document.getElementById('status-dot').classList.add('connected');
                 document.getElementById('status-text').innerText = 'Conectado';
 
-                // Guardar credenciales (si son las automáticas o nuevas)
                 localStorage.setItem('supa_url', url);
                 localStorage.setItem('supa_key', key);
 
-                // Verificar si hay sesión guardada (simple check email)
                 const lastEmail = localStorage.getItem('last_user_email');
                 if(lastEmail) document.getElementById('login-email').value = lastEmail;
 
@@ -572,11 +528,9 @@
             const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
 
-            // Check duplicado
             const { data: exist } = await supabaseClient.from('app_users').select('id').eq('email', email).single();
             if(exist) return showToast('Email ya registrado', 'error');
 
-            // Primer usuario es admin
             const { count } = await supabaseClient.from('app_users').select('*', { count: 'exact', head: true });
             const role = count === 0 ? 'admin' : 'user';
 
@@ -594,9 +548,10 @@
         function initApp() {
             document.getElementById('auth-panel').style.display = 'none';
             document.getElementById('dashboard-panel').style.display = 'block';
-            document.getElementById('header-subtitle').innerText = `Hola, ${currentUser.full_name}`;
+            document.getElementById('header-subtitle')?.remove(); // Limpiar si existe
+            const h1 = document.querySelector('header p');
+            if(h1) h1.innerText = `Hola, ${currentUser.full_name}`;
             
-            // Admin UI
             if(currentUser.role === 'admin') {
                 document.body.classList.add('admin-mode');
             } else {
@@ -639,7 +594,6 @@
                 card.className = 'trip-card';
                 card.onclick = () => loadTrip(trip.id, trip);
 
-                // Solo admin puede borrar viajes (lógica simple)
                 const deleteBtn = (currentUser.role === 'admin') ? 
                     `<button class="btn-icon-small" onclick="event.stopPropagation(); deleteTrip(${trip.id})" title="Borrar"><i class="fas fa-trash"></i></button>` : '';
 
@@ -659,13 +613,11 @@
         }
 
         function backToDashboard() {
-            if(confirm("¿Volver sin guardar cambios en este viaje?")) {
-                document.getElementById('setup-trip-form').style.display = 'none';
-                document.getElementById('planner-panel').style.display = 'none';
-                document.getElementById('dashboard-panel').style.display = 'block';
-                document.getElementById('summary-bar').style.display = 'none';
-                loadDashboard();
-            }
+            document.getElementById('setup-trip-form').style.display = 'none';
+            document.getElementById('planner-panel').style.display = 'none';
+            document.getElementById('dashboard-panel').style.display = 'block';
+            document.getElementById('summary-bar').style.display = 'none';
+            loadDashboard();
         }
 
         // --- CREAR VIAJE ---
@@ -678,7 +630,6 @@
             const exRate = parseFloat(document.getElementById('exchange-rate').value);
             const crcRateVal = parseFloat(document.getElementById('crc-rate').value);
 
-            // Generar días
             const daysList = [];
             let current = new Date(start);
             const endDateObj = new Date(end);
@@ -697,7 +648,7 @@
             const { data, error } = await supabaseClient.from('trips').insert({
                 destination: dest,
                 trip_data: newTripData,
-                shared_expenses: [] // Inicializar array vacío
+                shared_expenses: []
             }).select();
 
             if(error) {
@@ -714,7 +665,6 @@
             appData = tripObj.trip_data || appData;
             sharedExpenses = tripObj.shared_expenses || [];
             
-            // Cargar gastos personales de este usuario para este viaje
             const { data: pExp } = await supabaseClient.from('user_trip_expenses')
                 .select('*')
                 .eq('user_id', currentUser.id)
@@ -741,7 +691,6 @@
             document.getElementById('planner-panel').style.display = 'block';
             document.getElementById('summary-bar').style.display = 'flex';
 
-            // Header Info
             document.getElementById('display-destination').textContent = appData.destination;
             document.getElementById('display-currency').textContent = appData.currencySymbol || 'Local';
             document.getElementById('display-rate').textContent = appData.exchangeRate;
@@ -768,15 +717,13 @@
                 btn.innerHTML = `<span>Día ${index + 1}</span><span class="tab-date">${shortDate}</span>`;
                 nav.appendChild(btn);
             });
-            // Botón Resumen
             const totalBtn = document.createElement('button');
-            totalBtn.className = `tab-btn summary-tab ${activeDayIndex === appData.days.length ? 'active' : ''}`;
+            totalBtn.className = `tab-btn ${activeDayIndex === appData.days.length ? 'active' : ''}`;
             totalBtn.onclick = () => { activeDayIndex = appData.days.length; renderTabs(); renderActiveDay(); };
             totalBtn.innerHTML = `<span><i class="fas fa-chart-pie"></i></span><span class="tab-date">Resumen</span>`;
             nav.appendChild(totalBtn);
         }
 
-        // --- RENDERIZADO DEL DÍA ---
         function renderActiveDay() {
             if (activeDayIndex === appData.days.length) { renderSummarySheet(); return; }
 
@@ -786,7 +733,6 @@
             const rate = appData.exchangeRate;
             const crcRate = appData.crcRate || 0;
 
-            // 1. Calcular totales del día (Actividades + Gastos Diarios)
             let dayTotalUSD = 0;
             day.activities.forEach(act => { dayTotalUSD += convertToUSD(act.cost, act.currency); });
             dayTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
@@ -795,15 +741,13 @@
 
             const dayTotalLocal = dayTotalUSD * rate;
             const dayTotalCRC = dayTotalUSD * crcRate;
-            
-            // Totales acumulados del viaje (para mostrar)
             const tripTotals = calculateTripTotals();
 
             const dateObj = new Date(day.date);
             const fullDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
             const capitalDate = fullDate.charAt(0).toUpperCase() + fullDate.slice(1);
 
-            // --- GASTOS COMPARTIDOS (SECCION NUEVA) ---
+            // Gastos Compartidos
             let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Admin)</h4>`;
             const sharedTotal = sharedExpenses.reduce((a, b) => a + parseFloat(b.cost), 0);
             sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total Viaje: ${symbol}${sharedTotal.toFixed(2)}</div>`;
@@ -817,7 +761,7 @@
                 sharedHTML += `<button class="btn-primary" style="font-size:0.8rem; padding:0.5rem;" onclick="openModal('shared-expense-modal')">+ Gasto Compartido</button>`;
             }
 
-            // --- GASTOS PERSONALES (SECCION NUEVA) ---
+            // Gastos Personales
             let personalHTML = `<h4 style="margin-bottom:10px; color:var(--primary); margin-top:20px;"><i class="fas fa-user-tag"></i> Mis Gastos Personales</h4>`;
             const personalTotal = personalExpenses.reduce((a, b) => a + parseFloat(b.cost), 0);
             personalHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Mi Total: ${symbol}${personalTotal.toFixed(2)}</div>`;
@@ -854,7 +798,6 @@
             `;
         }
 
-        // --- ACTIVIDADES HTML (ORIGINAL FUNCIONAL) ---
         function renderActivitiesListHTML(day, dayIndex, symbol, rate, crcRate) {
             if (day.activities.length === 0) return `<li style="text-align:center; color:var(--gray); padding:2rem; border:1px dashed #ccc; border-radius:8px;">Sin actividades planeadas.</li>`;
             return day.activities.map((act, actIndex) => {
@@ -906,7 +849,6 @@
         }
 
         // --- LOGICA DE DATOS ---
-
         function convertToUSD(amount, currencyCode) {
             const val = parseFloat(amount) || 0;
             const code = currencyCode || 'local';
@@ -928,47 +870,42 @@
 
         async function saveToStorage() {
             if(!currentTripId || !supabaseClient) return;
-
-            // 1. Guardar datos principales del viaje (Actividades y Gastos Diarios)
             await supabaseClient.from('trips')
                 .update({ trip_data: appData, shared_expenses: sharedExpenses })
                 .eq('id', currentTripId);
-
-            // 2. Guardar gastos personales del usuario
             await supabaseClient.from('user_trip_expenses')
-                .upsert({ 
-                    user_id: currentUser.id, 
-                    trip_id: currentTripId, 
-                    personal_expenses: personalExpenses 
-                });
-
+                .upsert({ user_id: currentUser.id, trip_id: currentTripId, personal_expenses: personalExpenses });
             updateTotalCost();
             renderActiveDay();
         }
 
         // --- GESTION DE ACTIVIDADES ---
         function openModal(mode, dayIndex, actIndex = null) {
-            document.getElementById('activity-modal').classList.add('active');
-            document.getElementById('modal-day-index').value = dayIndex;
-            document.getElementById('modal-activity-index').value = actIndex !== null ? actIndex : '';
-            const form = document.getElementById('activity-form');
-            if (mode === 'edit' && actIndex !== null) {
-                document.getElementById('modal-title').textContent = 'Editar Actividad';
-                const act = appData.days[dayIndex].activities[actIndex];
-                document.getElementById('act-icon').value = act.icon || 'fa-star';
-                document.getElementById('act-time').value = act.time;
-                document.getElementById('act-name').value = act.name;
-                document.getElementById('act-location').value = act.location;
-                document.getElementById('act-transport').value = act.howToGet;
-                document.getElementById('act-link').value = act.link;
-                document.getElementById('act-cost').value = act.cost;
-                document.getElementById('act-currency').value = act.currency || 'local';
-            } else {
-                document.getElementById('modal-title').textContent = 'Añadir Actividad';
-                form.reset();
-                document.getElementById('act-icon').value = 'fa-star';
-                document.getElementById('act-cost').value = 0;
-                document.getElementById('act-currency').value = 'local';
+            const modalId = (mode === 'add' || mode === 'edit') ? 'activity-modal' : mode;
+            document.getElementById(modalId).classList.add('active');
+            
+            if (modalId === 'activity-modal') {
+                document.getElementById('modal-day-index').value = dayIndex;
+                document.getElementById('modal-activity-index').value = actIndex !== null ? actIndex : '';
+                const form = document.getElementById('activity-form');
+                if (mode === 'edit' && actIndex !== null) {
+                    document.getElementById('modal-title').textContent = 'Editar Actividad';
+                    const act = appData.days[dayIndex].activities[actIndex];
+                    document.getElementById('act-icon').value = act.icon || 'fa-star';
+                    document.getElementById('act-time').value = act.time;
+                    document.getElementById('act-name').value = act.name;
+                    document.getElementById('act-location').value = act.location;
+                    document.getElementById('act-transport').value = act.howToGet;
+                    document.getElementById('act-link').value = act.link;
+                    document.getElementById('act-cost').value = act.cost;
+                    document.getElementById('act-currency').value = act.currency || 'local';
+                } else {
+                    document.getElementById('modal-title').textContent = 'Añadir Actividad';
+                    form.reset();
+                    document.getElementById('act-icon').value = 'fa-star';
+                    document.getElementById('act-cost').value = 0;
+                    document.getElementById('act-currency').value = 'local';
+                }
             }
         }
 
@@ -1016,7 +953,6 @@
             await saveToStorage();
             closeModal('shared-expense-modal');
         }
-
         async function deleteSharedExpense(idx) {
             if(confirm("¿Borrar gasto compartido?")) {
                 sharedExpenses.splice(idx, 1);
@@ -1033,7 +969,6 @@
             await saveToStorage();
             closeModal('personal-expense-modal');
         }
-
         async function deletePersonalExpense(idx) {
             if(confirm("¿Borrar gasto personal?")) {
                 personalExpenses.splice(idx, 1);
@@ -1041,30 +976,92 @@
             }
         }
 
-        // --- GESTION USUARIOS (ADMIN) ---
-        async function adminCreateUser(e) {
-            e.preventDefault();
-            const name = document.getElementById('new-user-name').value;
-            const email = document.getElementById('new-user-email').value;
-            const pass = document.getElementById('new-user-pass').value;
-            const { error } = await supabaseClient.from('app_users').insert({
-                full_name: name, email: email, password: pass, role: 'user'
-            });
-            if(error) showToast('Error creando usuario', 'error');
-            else {
-                showToast('Usuario creado', 'success');
-                e.target.reset();
-                loadUsersList();
-            }
+        // --- GESTION USUARIOS (ADMIN) - ACTUALIZADO PARA EDITAR ---
+        async function openUserModal() {
+            clearUserForm();
+            loadUsersList();
+            openModal('users-modal');
         }
 
         async function loadUsersList() {
             const { data } = await supabaseClient.from('app_users').select('*');
             const list = document.getElementById('users-list-ul');
-            list.innerHTML = data.map(u => `<li>${u.full_name} (${u.email}) - <b>${u.role}</b></li>`).join('');
+            list.innerHTML = '';
+            
+            data.forEach(u => {
+                const li = document.createElement('li');
+                li.className = 'user-list-item';
+                // Si hago clic en el nombre, edito. Si hago clic en borrar, borro.
+                li.innerHTML = `
+                    <span onclick="editUser(${u.id})" style="flex:1; cursor:pointer; font-weight:600;">${u.full_name} <small style="font-weight:400; color:#888;">(${u.email})</small></span>
+                    <div class="user-list-actions">
+                        <span style="font-size:0.8rem; background:${u.role==='admin'?'#fff3cd':'#f1f2f6'}; padding:2px 6px; border-radius:4px;">${u.role}</span>
+                        ${u.email !== 'admin@quinchitico.com' ? `<button class="btn-sm btn-delete" onclick="event.stopPropagation(); deleteUser(${u.id})"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+                `;
+                list.appendChild(li);
+            });
         }
 
-        function openUserModal() { loadUsersList(); openModal('users-modal'); }
+        function clearUserForm() {
+            document.getElementById('edit-user-id').value = '';
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-email').value = '';
+            document.getElementById('user-pass').value = '';
+            document.querySelector('#users-modal form button[type="submit"]').innerText = 'Guardar Usuario';
+        }
+
+        async function editUser(id) {
+            const { data } = await supabaseClient.from('app_users').select('*').eq('id', id).single();
+            if(data) {
+                document.getElementById('edit-user-id').value = data.id;
+                document.getElementById('user-name').value = data.full_name;
+                document.getElementById('user-email').value = data.email;
+                document.getElementById('user-pass').value = ''; // No mostramos pass actual
+                document.querySelector('#users-modal form button[type="submit"]').innerText = 'Actualizar Usuario';
+                showToast('Editando usuario: ' + data.full_name, 'success');
+            }
+        }
+
+        async function handleUserSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            const pass = document.getElementById('user-pass').value;
+
+            if(id) {
+                // UPDATE
+                const updateData = { full_name: name, email: email };
+                if(pass) updateData.password = pass;
+                
+                const { error } = await supabaseClient.from('app_users').update(updateData).eq('id', id);
+                if(error) showToast('Error actualizando', 'error');
+                else {
+                    showToast('Usuario actualizado', 'success');
+                    clearUserForm();
+                    loadUsersList();
+                }
+            } else {
+                // CREATE
+                const { error } = await supabaseClient.from('app_users').insert({
+                    full_name: name, email: email, password: pass, role: 'user'
+                });
+                if(error) showToast('Error creando', 'error');
+                else {
+                    showToast('Usuario creado', 'success');
+                    clearUserForm();
+                    loadUsersList();
+                }
+            }
+        }
+
+        async function deleteUser(id) {
+            if(!confirm("¿Borrar este usuario?")) return;
+            const { error } = await supabaseClient.from('app_users').delete().eq('id', id);
+            if(error) showToast('Error borrando', 'error');
+            else loadUsersList();
+        }
 
         // --- RESUMEN ---
         function renderSummarySheet() {
@@ -1088,9 +1085,9 @@
                 <div class="summary-card">
                     <h2 class="summary-title">Resumen Financiero</h2>
                     <div class="big-totals">
-                        <div class="big-total-item"><span class="bt-label">Dólares (USD)</span><span class="bt-value usd">$${totals.usd.toFixed(2)}</span></div>
-                        ${crcRate > 0 ? `<div class="big-total-item"><span class="bt-label">Colones (CRC)</span><span class="bt-value crc">₡${totals.crc.toLocaleString()}</span></div>` : ''}
-                        <div class="big-total-item"><span class="bt-label">${symbol} (Local)</span><span class="bt-value local">${formatMoney(totals.local)}</span></div>
+                        <div class="big-total-item"><span class="bt-label">Dólares (USD)</span><span class="bt-value">$${totals.usd.toFixed(2)}</span></div>
+                        ${crcRate > 0 ? `<div class="big-total-item"><span class="bt-label">Colones (CRC)</span><span class="bt-value">₡${totals.crc.toLocaleString()}</span></div>` : ''}
+                        <div class="big-total-item"><span class="bt-label">${symbol} (Local)</span><span class="bt-value">${formatMoney(totals.local)}</span></div>
                     </div>
                     <div class="summary-grid">
                         <div class="breakdown-section">
@@ -1121,7 +1118,6 @@
         }
 
         function calculateTripTotals() {
-            // 1. Totales del itinerario y gastos diarios
             let grandTotalUSD = 0;
             const rate = appData.exchangeRate || 1;
             const crcRate = appData.crcRate || 0;
@@ -1131,16 +1127,8 @@
                 grandTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
             });
-
-            // 2. Sumar Gastos Compartidos (convertidos a USD para sumar)
-            sharedExpenses.forEach(exp => {
-                grandTotalUSD += (parseFloat(exp.cost) / rate);
-            });
-
-            // 3. Sumar Gastos Personales (convertidos a USD para sumar)
-            personalExpenses.forEach(exp => {
-                grandTotalUSD += (parseFloat(exp.cost) / rate);
-            });
+            sharedExpenses.forEach(exp => { grandTotalUSD += (parseFloat(exp.cost) / rate); });
+            personalExpenses.forEach(exp => { grandTotalUSD += (parseFloat(exp.cost) / rate); });
 
             return { usd: grandTotalUSD, crc: grandTotalUSD * crcRate, local: grandTotalUSD * rate };
         }
@@ -1200,4 +1188,3 @@
 </body>
 </html>
 ```
-
