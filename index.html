@@ -13,12 +13,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        /* --- ESTILOS ORIGINALES RESTAURADOS + NUEVOS --- */
         :root {
-            --primary: #00cec9; --secondary: #0984e3; --accent: #fdcb6e;
-            --danger: #ff7675; --dark: #2d3436; --light: #f5f6fa;
-            --white: #ffffff; --gray: #b2bec3; --radius: 12px;
+            --primary: #00cec9;
+            --primary-dark: #00b894;
+            --secondary: #0984e3;
+            --accent: #fdcb6e;
+            --danger: #ff7675;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --white: #ffffff;
+            --gray: #b2bec3;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 12px;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
         body { background-color: var(--light); color: var(--dark); padding-bottom: 100px; }
 
         header {
@@ -26,7 +37,7 @@
             color: var(--white);
             padding: 2rem 1rem;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             position: relative;
             display: flex;
             justify-content: center;
@@ -36,13 +47,19 @@
         header p { font-size: 1rem; opacity: 0.9; }
 
         .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
-        .card { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 1rem; text-align: center; }
+
+        /* --- DASHBOARD & SETUP --- */
+        #dashboard-panel, #setup-trip-form, #connection-panel {
+            background: var(--white); padding: 2rem; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-top: -20px; text-align: center;
+        }
 
         .form-group { margin-bottom: 1rem; text-align: left; }
         .form-row { display: flex; gap: 1rem; }
         .form-row .form-group { flex: 1; }
 
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark); font-size: 0.9rem; }
+
         input, select, textarea {
             width: 100%; padding: 0.7rem; border: 2px solid #dfe6e9; border-radius: 8px; font-size: 0.95rem; transition: 0.3s;
         }
@@ -66,7 +83,7 @@
             background: #f8f9fa; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem;
             text-align: left; cursor: pointer; transition: 0.2s; position: relative;
         }
-        .trip-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .trip-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
         .trip-card h3 { color: var(--dark); margin-bottom: 0.5rem; }
         .trip-card p { color: var(--gray); font-size: 0.85rem; margin-bottom: 0.2rem; }
         .trip-card-actions { position: absolute; top: 10px; right: 10px; }
@@ -75,9 +92,10 @@
 
         /* --- PANEL PLANIFICADOR --- */
         #planner-panel { display: none; animation: fadeIn 0.5s ease-in; }
+
         .trip-header-info {
             background: var(--white); padding: 1rem; border-radius: var(--radius);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; display: flex; justify-content: space-between;
+            box-shadow: var(--shadow); margin-bottom: 1rem; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 10px;
         }
         .trip-title { font-size: 1.3rem; color: var(--secondary); font-weight: 800; }
@@ -85,13 +103,17 @@
         .btn-back { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; cursor: pointer; margin-right: 10px; }
 
         /* --- TABS & ACTIVITIES --- */
-        .tabs-wrapper { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; margin-top: 1rem; }
+        .tabs-wrapper { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-top: 1rem; }
         .tabs-nav { display: flex; background: #f1f2f6; overflow-x: auto; border-bottom: 2px solid #dfe6e9; position: sticky; top: 0; z-index: 10; }
         .tabs-nav::-webkit-scrollbar { height: 4px; }
         .tab-btn { padding: 1rem 1.2rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: var(--gray); white-space: nowrap; transition: 0.3s; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; min-width: 90px; }
         .tab-btn:hover { background: #e0e0e0; color: var(--dark); }
         .tab-btn.active { color: var(--primary); background: white; border-bottom: 3px solid var(--primary); }
         .tab-date { font-size: 0.75rem; font-weight: normal; margin-top: 2px; }
+
+        /* Summary Tab */
+        .tab-btn.summary-tab { border-left: 2px solid #dfe6e9; margin-left: 5px; }
+        .tab-btn.summary-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
         /* Activity List */
         .day-total-header { background: #e0f7fa; border: 1px solid #b2bec3; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; overflow: hidden; }
@@ -111,10 +133,22 @@
         .activity-details { flex-grow: 1; }
         .activity-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 8px; }
         .activity-meta { font-size: 0.9rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .activity-link { color: var(--secondary); text-decoration: none; font-weight: 600; }
         .activity-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
         .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px; }
         .btn-edit { background: #e0f7fa; color: var(--secondary); }
         .btn-delete { background: #ffebee; color: var(--danger); }
+
+        /* CLASES DE COLORES DE ICONOS (RESTAURADAS) */
+        .act-icon-general { color: var(--gray); }
+        .act-icon-food { color: #e17055; }
+        .act-icon-transport { color: #0984e3; }
+        .act-icon-culture { color: #fdcb6e; }
+        .act-icon-travel { color: #00cec9; }
+        .act-icon-lodging { color: #6c5ce7; }
+        .act-icon-nature { color: #00b894; }
+        .act-icon-shopping { color: #e84393; }
+        .act-icon-party { color: #a29bfe; }
 
         .btn-add-activity { width: 100%; padding: 1rem; background: white; border: 2px dashed var(--primary); color: var(--primary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
         .btn-add-activity:hover { background: #e0fffa; }
@@ -122,24 +156,34 @@
         .daily-expenses { background-color: #fdfdfd; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem; }
         .expense-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom:1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
         .expense-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; }
+        .expense-input label { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 5px; }
 
-        /* SECCIONES NUEVAS (GASTOS) */
+        /* SECCIONES NUEVAS (GASTOS COMPARTIDOS/PERSONALES) */
         .shared-expenses-box { border: 1px solid #fdcb6e; background: #fffbf0; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
         .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
         .expense-row-list { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
         .expense-row-list:hover { background: rgba(0,0,0,0.02); }
 
         /* Summary Styles */
-        .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
         .summary-title { font-size: 1.5rem; color: var(--secondary); margin-bottom: 1.5rem; font-weight: bold; }
         .big-totals { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; }
         .big-total-item { flex: 1; min-width: 150px; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
         .bt-label { display: block; font-size: 0.9rem; color: var(--gray); text-transform: uppercase; margin-bottom: 0.5rem; }
         .bt-value { display: block; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
+        .bt-value.usd { color: var(--secondary); }
+        .bt-value.crc { color: var(--primary); }
+        .bt-value.local { color: var(--accent); }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; text-align: left; }
+        .breakdown-section h3 { font-size: 1.1rem; color: var(--dark); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #eee; }
+        .breakdown-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px dashed #eee; }
+        .cat-name { font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .cat-val { font-weight: bold; color: var(--secondary); }
 
         /* --- FLOATING BAR --- */
         .floating-summary { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--dark); color: white; padding: 0.8rem 2rem; display: flex; justify-content: center; align-items: center; gap: 0.3rem; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); z-index: 100; }
         .floating-summary .total-amount { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+        .floating-summary .total-crc { font-size: 1rem; color: var(--primary); font-weight: bold; margin-left: 15px; }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
@@ -151,6 +195,7 @@
 
         /* Auth Specific */
         .auth-container { max-width: 400px; margin: 50px auto; }
+        .user-badge { position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; }
         .status-dot.connected { background: #2ecc71; }
         .admin-only-btn { display: none; }
@@ -168,6 +213,7 @@
 
         @media (max-width: 600px) {
             header h1 { font-size: 1.5rem; }
+            .summary-grid { grid-template-columns: 1fr; }
         }
         .hidden { display: none !important; }
     </style>
@@ -175,8 +221,8 @@
 <body>
 
     <header>
-        <div id="connection-status-badge" style="position:absolute; top:1rem; right:1rem; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:15px; font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-            <div class="status-dot" id="status-dot"></div> <span id="status-text">Desconectado</span>
+        <div id="connection-status-badge" style="display:none;">
+            <div class="status-dot" id="status-dot"></div> <span id="status-text">Conectado</span>
         </div>
         <h1><i class="fas fa-plane-departure"></i> Quinchitico Tour</h1>
         <p>Planifica y gestiona tus viajes</p>
@@ -548,7 +594,7 @@
         function initApp() {
             document.getElementById('auth-panel').style.display = 'none';
             document.getElementById('dashboard-panel').style.display = 'block';
-            document.getElementById('header-subtitle')?.remove(); // Limpiar si existe
+            document.getElementById('header-subtitle')?.remove();
             const h1 = document.querySelector('header p');
             if(h1) h1.innerText = `Hola, ${currentUser.full_name}`;
             
@@ -718,7 +764,7 @@
                 nav.appendChild(btn);
             });
             const totalBtn = document.createElement('button');
-            totalBtn.className = `tab-btn ${activeDayIndex === appData.days.length ? 'active' : ''}`;
+            totalBtn.className = `tab-btn summary-tab ${activeDayIndex === appData.days.length ? 'active' : ''}`;
             totalBtn.onclick = () => { activeDayIndex = appData.days.length; renderTabs(); renderActiveDay(); };
             totalBtn.innerHTML = `<span><i class="fas fa-chart-pie"></i></span><span class="tab-date">Resumen</span>`;
             nav.appendChild(totalBtn);
@@ -801,6 +847,7 @@
         function renderActivitiesListHTML(day, dayIndex, symbol, rate, crcRate) {
             if (day.activities.length === 0) return `<li style="text-align:center; color:var(--gray); padding:2rem; border:1px dashed #ccc; border-radius:8px;">Sin actividades planeadas.</li>`;
             return day.activities.map((act, actIndex) => {
+                // CLASES COLORES RESTAURADAS
                 let iconClass = 'act-icon-general';
                 if(['fa-utensils'].includes(act.icon)) iconClass = 'act-icon-food';
                 if(['fa-bus','fa-taxi','fa-subway'].includes(act.icon)) iconClass = 'act-icon-transport';
@@ -991,7 +1038,6 @@
             data.forEach(u => {
                 const li = document.createElement('li');
                 li.className = 'user-list-item';
-                // Si hago clic en el nombre, edito. Si hago clic en borrar, borro.
                 li.innerHTML = `
                     <span onclick="editUser(${u.id})" style="flex:1; cursor:pointer; font-weight:600;">${u.full_name} <small style="font-weight:400; color:#888;">(${u.email})</small></span>
                     <div class="user-list-actions">
@@ -1017,7 +1063,7 @@
                 document.getElementById('edit-user-id').value = data.id;
                 document.getElementById('user-name').value = data.full_name;
                 document.getElementById('user-email').value = data.email;
-                document.getElementById('user-pass').value = ''; // No mostramos pass actual
+                document.getElementById('user-pass').value = '';
                 document.querySelector('#users-modal form button[type="submit"]').innerText = 'Actualizar Usuario';
                 showToast('Editando usuario: ' + data.full_name, 'success');
             }
@@ -1031,7 +1077,6 @@
             const pass = document.getElementById('user-pass').value;
 
             if(id) {
-                // UPDATE
                 const updateData = { full_name: name, email: email };
                 if(pass) updateData.password = pass;
                 
@@ -1043,7 +1088,6 @@
                     loadUsersList();
                 }
             } else {
-                // CREATE
                 const { error } = await supabaseClient.from('app_users').insert({
                     full_name: name, email: email, password: pass, role: 'user'
                 });
@@ -1119,72 +1163,4 @@
 
         function calculateTripTotals() {
             let grandTotalUSD = 0;
-            const rate = appData.exchangeRate || 1;
-            const crcRate = appData.crcRate || 0;
-            appData.days.forEach(day => {
-                day.activities.forEach(act => { grandTotalUSD += convertToUSD(act.cost, act.currency); });
-                grandTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
-                grandTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
-                grandTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
-            });
-            sharedExpenses.forEach(exp => { grandTotalUSD += (parseFloat(exp.cost) / rate); });
-            personalExpenses.forEach(exp => { grandTotalUSD += (parseFloat(exp.cost) / rate); });
-
-            return { usd: grandTotalUSD, crc: grandTotalUSD * crcRate, local: grandTotalUSD * rate };
-        }
-
-        function updateTotalCost() {
-            const tripTotals = calculateTripTotals();
-            document.getElementById('grand-total').textContent = '$' + tripTotals.usd.toFixed(2) + ' USD';
-            const crcRate = appData.crcRate || 0;
-            if(crcRate > 0) {
-                document.getElementById('grand-total-crc').textContent = '₡' + tripTotals.crc.toLocaleString() + ' Colones';
-                document.getElementById('grand-total-crc').style.display = 'block';
-            } else { document.getElementById('grand-total-crc').style.display = 'none'; }
-        }
-
-        // --- UTILIDADES ---
-        function showToast(msg, type='success') {
-            const t = document.createElement('div');
-            t.className = `toast ${type}`;
-            t.innerText = msg;
-            document.getElementById('toast-area').appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
-
-        function fillCurrencyFromPreset() {
-            const select = document.getElementById('preset-currency');
-            const value = select.value;
-            if(value) {
-                const [symbol, rate] = value.split('|');
-                document.getElementById('currency-symbol').value = symbol;
-                document.getElementById('exchange-rate').value = rate;
-            }
-        }
-
-        function openRateModal() {
-            document.getElementById('rate-modal-symbol').textContent = appData.currencySymbol || 'local';
-            document.getElementById('new-exchange-rate').value = appData.exchangeRate;
-            document.getElementById('new-crc-rate').value = appData.crcRate || 540;
-            document.getElementById('rate-modal').classList.add('active');
-        }
-
-        async function saveNewRates() {
-            const newRate = parseFloat(document.getElementById('new-exchange-rate').value);
-            const newCrcRate = parseFloat(document.getElementById('new-crc-rate').value);
-            if(newRate > 0) {
-                appData.exchangeRate = newRate;
-                appData.crcRate = newCrcRate > 0 ? newCrcRate : 0;
-                await saveToStorage();
-                document.getElementById('display-rate').textContent = newRate;
-                document.getElementById('display-crc-rate').textContent = newCrcRate;
-                closeModal('rate-modal');
-                showToast('Tipos de cambio actualizados', 'success');
-            } else {
-                alert("El tipo de cambio debe ser mayor a 0");
-            }
-        }
-    </script>
-</body>
-</html>
-```
+            const rate = appData.exchange
