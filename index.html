@@ -7,7 +7,22 @@
     <title>Quinchitico Tour - Gestor Pro</title>
     
     <!-- Iconos y Estilos -->
+    <!-- Icono Favicon para el navegador -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%2300cec9' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
+    
+    <!-- NUEVO: Configuración para que salga como App en el Móvil (Icono y Nombre) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Quinchitico Tour">
+    <meta name="theme-color" content="#00cec9">
+    <meta name="application-name" content="Quinchitico Tour">
+
+    <!-- Icono de Alta Resolución para iOS (iPhone) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%2300cec9' rx='115'/><path fill='white' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
+    
+    <!-- Icono para Android y otros navegadores -->
+    <link rel="icon" type="image/svg+xml" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%2300cec9' rx='115'/><path fill='white' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -120,13 +135,13 @@
         .btn-add-activity { width: 100%; padding: 1rem; background: white; border: 2px dashed var(--primary); color: var(--primary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
         .btn-add-activity:hover { background: #e0fffa; }
 
-        /* --- ESTILOS GASTOS DIARIOS (RESTAURADOS) --- */
+        /* --- ESTILOS GASTOS DIARIOS --- */
         .daily-expenses { background-color: #fdfdfd; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
         .expense-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom:1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; font-weight: 700; }
         .expense-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; }
         .expense-input label { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 5px; }
 
-        /* --- COLORES DE ICONOS (RESTAURADOS) --- */
+        /* --- COLORES DE ICONOS --- */
         .act-icon-food { color: #e17055; }
         .act-icon-transport { color: #0984e3; }
         .act-icon-lodging { color: #6c5ce7; }
@@ -137,7 +152,7 @@
         /* SECCIONES NUEVAS (GASTOS) */
         .shared-expenses-box { border: 1px solid #fdcb6e; background: #fffbf0; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
         .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .expense-row-list { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
+        .expense-row-list { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
         .expense-row-list:hover { background: rgba(0,0,0,0.02); }
 
         /* Summary Styles */
@@ -159,6 +174,29 @@
         .modal-overlay.active .modal { transform: translateY(0); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom:1.5rem; }
         .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
+
+        /* --- ESTILO GRID DE ICONOS --- */
+        .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 5px; }
+        .icon-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; cursor: pointer;
+            background: white; transition: all 0.2s;
+        }
+        .icon-btn i { font-size: 1.5rem; margin-bottom: 5px; color: var(--gray); }
+        .icon-btn span { font-size: 0.7rem; color: var(--gray); text-align: center; line-height: 1.2; }
+        
+        /* Estado seleccionado */
+        .icon-btn.selected { border-color: var(--primary); background-color: #e0fffa; }
+        .icon-btn.selected i, .icon-btn.selected span { color: var(--secondary); font-weight: bold; }
+
+        /* Colores hover específicos para dar feedback visual */
+        .icon-btn:hover { border-color: var(--secondary); }
+        .icon-btn[data-cat="food"]:hover i { color: #e17055; }
+        .icon-btn[data-cat="transport"]:hover i { color: #0984e3; }
+        .icon-btn[data-cat="lodging"]:hover i { color: #6c5ce7; }
+        .icon-btn[data-cat="nature"]:hover i { color: #00b894; }
+        .icon-btn[data-cat="culture"]:hover i { color: #fdcb6e; }
+        .icon-btn[data-cat="party"]:hover i { color: #e84393; }
 
         /* Auth Specific */
         .auth-container { max-width: 400px; margin: 50px auto; }
@@ -280,9 +318,13 @@
                     <p style="font-size: 0.75rem; color: var(--gray); margin-top: 2px;">Necesario para calcular los totales en Colones.</p>
                 </div>
 
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-save"></i> Crear y Guardar en Base de Datos
-                </button>
+                <!-- BOTONES DE ACCIÓN FINAL -->
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="backToDashboard()" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">
+                        <i class="fas fa-save"></i> Crear y Guardar
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -332,20 +374,14 @@
             <form id="activity-form" onsubmit="saveActivity(event)">
                 <input type="hidden" id="modal-day-index">
                 <input type="hidden" id="modal-activity-index">
+                
+                <!-- GRID DE ICONOS -->
                 <div class="form-group">
-                    <label>Categoría / Icono</label>
-                    <select id="act-icon">
-                        <option value="fa-star">General</option>
-                        <option value="fa-utensils">Comida</option>
-                        <option value="fa-bus">Transporte (Bus/Taxi)</option>
-                        <option value="fa-landmark">Museo / Cultura</option>
-                        <option value="fa-plane">Avión / Viaje</option>
-                        <option value="fa-bed">Hotel / Alojamiento</option>
-                        <option value="fa-tree">Naturaleza / Parque</option>
-                        <option value="fa-shopping-bag">Compras</option>
-                        <option value="fa-glass-cheers">Fiesta / Noche</option>
-                    </select>
+                    <label>Categoría / Gasto</label>
+                    <div class="icon-grid" id="activity-icon-grid"></div>
+                    <input type="hidden" id="act-icon" value="fa-star">
                 </div>
+
                 <div class="form-group"><label>Hora</label><input type="time" id="act-time" required></div>
                 <div class="form-group"><label>Nombre de la Actividad / Lugar</label><input type="text" id="act-name" placeholder="Ej: Visita al Museo" required></div>
                 <div class="form-group"><label>Ubicación</label><input type="text" id="act-location" placeholder="Dirección o Punto de referencia"></div>
@@ -365,7 +401,96 @@
                         <input type="number" id="act-cost" min="0" step="0.01" value="0" required>
                     </div>
                 </div>
-                <button type="submit" class="btn-primary">Guardar Actividad</button>
+                
+                <!-- BOTONES CON CANCELAR -->
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="closeModal('activity-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar Actividad</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GASTO COMPARTIDO (ADMIN) -->
+    <div class="modal-overlay" id="shared-expense-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Gasto Compartido (Admin)</h3>
+                <button class="close-modal" onclick="closeModal('shared-expense-modal')">&times;</button>
+            </div>
+            <form onsubmit="saveSharedExpense(event)">
+                <!-- GRID DE ICONOS PARA GASTOS COMPARTIDOS -->
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <div class="icon-grid" id="shared-icon-grid"></div>
+                    <input type="hidden" id="shared-icon" value="fa-star">
+                </div>
+
+                <div class="form-group"><label>Descripción (Opcional)</label><input type="text" id="shared-desc" placeholder="Ej: Hotel Noche 1"></div>
+                
+                <!-- NUEVO: SELECTOR DE MONEDA Y COSTO -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <select id="shared-currency">
+                            <option value="local">Local</option>
+                            <option value="usd">USD</option>
+                            <option value="crc">Colones (CRC)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Costo</label>
+                        <input type="number" id="shared-cost" step="0.01" required>
+                    </div>
+                </div>
+
+                <!-- BOTONES CON CANCELAR -->
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="closeModal('shared-expense-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GASTO PERSONAL (USER) -->
+    <div class="modal-overlay" id="personal-expense-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Mi Gasto Personal</h3>
+                <button class="close-modal" onclick="closeModal('personal-expense-modal')">&times;</button>
+            </div>
+            <form onsubmit="savePersonalExpense(event)">
+                <!-- GRID DE ICONOS PARA GASTOS PERSONALES -->
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <div class="icon-grid" id="personal-icon-grid"></div>
+                    <input type="hidden" id="personal-icon" value="fa-star">
+                </div>
+
+                <div class="form-group"><label>Descripción (Opcional)</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Compras"></div>
+                
+                <!-- NUEVO: SELECTOR DE MONEDA Y COSTO -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <select id="personal-currency">
+                            <option value="local">Local</option>
+                            <option value="usd">USD</option>
+                            <option value="crc">Colones (CRC)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Costo</label>
+                        <input type="number" id="personal-cost" step="0.01" required>
+                    </div>
+                </div>
+
+                <!-- BOTONES CON CANCELAR -->
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="closeModal('personal-expense-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar</button>
+                </div>
             </form>
         </div>
     </div>
@@ -383,8 +508,10 @@
                 <div class="form-group"><label>Nombre</label><input type="text" id="user-name" required></div>
                 <div class="form-group"><label>Email</label><input type="email" id="user-email" required></div>
                 <div class="form-group"><label>Contraseña</label><input type="password" id="user-pass" placeholder="Dejar vacío para mantener actual" ></div>
-                <button type="submit" class="btn-primary">Guardar Usuario</button>
-                <button type="button" class="btn-secondary" style="width:100%; margin-top:10px;" onclick="clearUserForm()">Limpiar / Crear Nuevo</button>
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="closeModal('users-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar Usuario</button>
+                </div>
             </form>
             
             <hr style="margin: 1.5rem 0;">
@@ -404,39 +531,10 @@
                 <div class="form-group"><label>Nombre</label><input type="text" id="reg-name" required></div>
                 <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
                 <div class="form-group"><label>Contraseña</label><input type="password" id="reg-pass" required></div>
-                <button type="submit" class="btn-primary">Registrarse</button>
-                <!-- BOTÓN ATRÁS EN MODAL -->
-                <button type="button" class="btn-secondary" onclick="closeModal('register-modal')" style="width:100%; margin-top:10px;">Atrás</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL GASTO COMPARTIDO (ADMIN) -->
-    <div class="modal-overlay" id="shared-expense-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Gasto Compartido (Admin)</h3>
-                <button class="close-modal" onclick="closeModal('shared-expense-modal')">&times;</button>
-            </div>
-            <form onsubmit="saveSharedExpense(event)">
-                <div class="form-group"><label>Descripción</label><input type="text" id="shared-desc" placeholder="Ej: Hotel Noche 1" required></div>
-                <div class="form-group"><label>Costo Total</label><input type="number" id="shared-cost" step="0.01" required></div>
-                <button type="submit" class="btn-primary">Guardar</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL GASTO PERSONAL (USER) -->
-    <div class="modal-overlay" id="personal-expense-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Mi Gasto Personal</h3>
-                <button class="close-modal" onclick="closeModal('personal-expense-modal')">&times;</button>
-            </div>
-            <form onsubmit="savePersonalExpense(event)">
-                <div class="form-group"><label>Descripción</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Compras" required></div>
-                <div class="form-group"><label>Costo</label><input type="number" id="personal-cost" step="0.01" required></div>
-                <button type="submit" class="btn-primary">Guardar</button>
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="closeModal('register-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Registrarse</button>
+                </div>
             </form>
         </div>
     </div>
@@ -456,7 +554,10 @@
                 <label>Cambio USD a Colones (1 USD = ? Colones)</label>
                 <input type="number" id="new-crc-rate" step="1" value="540">
             </div>
-            <button class="btn-primary" onclick="saveNewRates()">Actualizar</button>
+            <div class="form-row">
+                <button type="button" class="btn-secondary" onclick="closeModal('rate-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
+                <button class="btn-primary" onclick="saveNewRates()" style="flex:2; margin-top:1rem; margin-left:5px;">Actualizar</button>
+            </div>
         </div>
     </div>
 
@@ -464,6 +565,20 @@
     <div id="toast-area"></div>
 
     <script>
+        // --- CONFIGURACIÓN DE CATEGORÍAS PARA EL MENÚ VISUAL ---
+        const CATEGORIES = [
+            { id: 'fa-plane', label: 'Vuelos', cat: 'transport' },
+            { id: 'fa-utensils', label: 'Comida', cat: 'food' },
+            { id: 'fa-landmark', label: 'Museos', cat: 'culture' },
+            { id: 'fa-tree', label: 'Parques', cat: 'nature' },
+            { id: 'fa-glass-cheers', label: 'Bares', cat: 'party' },
+            { id: 'fa-bed', label: 'Hotel', cat: 'lodging' },
+            { id: 'fa-bus', label: 'Bus/Taxi', cat: 'transport' },
+            { id: 'fa-shopping-bag', label: 'Compras', cat: 'shopping' },
+            { id: 'fa-ticket-alt', label: 'Entradas', cat: 'culture' },
+            { id: 'fa-star', label: 'General', cat: 'general' }
+        ];
+
         // --- CREDENCIALES AUTOMATICAS ---
         const AUTO_URL = "https://orinqfthcxrzcjgkmrmd.supabase.co";
         const AUTO_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yaW5xZnRoY3hyemNqZ2ttcm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MDcyMzksImV4cCI6MjA4NTk4MzIzOX0.fzAlGiGozWJsFROtg0cbSymHWlUKkb-eQpNXpVRIOPY";
@@ -763,13 +878,20 @@
 
             // Gastos Compartidos
             let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Admin)</h4>`;
-            const sharedTotal = sharedExpenses.reduce((a, b) => a + parseFloat(b.cost), 0);
-            sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total Viaje: ${symbol}${sharedTotal.toFixed(2)}</div>`;
+            const sharedTotalUSD = sharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
+            sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total Viaje: $${sharedTotalUSD.toFixed(2)} USD</div>`;
             
             sharedExpenses.forEach((exp, idx) => {
+                const iconClass = getIconColorClass(exp.icon);
+                const displayIcon = exp.icon || 'fa-receipt';
+                const desc = exp.desc || 'Gasto';
+                
+                // Mostrar símbolo de moneda correcto
+                const currSym = getCurrencySymbol(exp.currency);
+                
                 const delBtn = (currentUser.role === 'admin') ? 
                     `<i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deleteSharedExpense(${idx})"></i>` : '';
-                sharedHTML += `<div class="expense-row-list"><span>${exp.desc} ${delBtn}</span><span>${symbol}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
+                sharedHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} ${delBtn}</span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
             });
             if(currentUser.role === 'admin') {
                 sharedHTML += `<button class="btn-primary" style="font-size:0.8rem; padding:0.5rem;" onclick="openModal('shared-expense-modal')">+ Gasto Compartido</button>`;
@@ -777,11 +899,18 @@
 
             // Gastos Personales
             let personalHTML = `<h4 style="margin-bottom:10px; color:var(--primary); margin-top:20px;"><i class="fas fa-user-tag"></i> Mis Gastos Personales</h4>`;
-            const personalTotal = personalExpenses.reduce((a, b) => a + parseFloat(b.cost), 0);
-            personalHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Mi Total: ${symbol}${personalTotal.toFixed(2)}</div>`;
+            const personalTotalUSD = personalExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
+            personalHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Mi Total: $${personalTotalUSD.toFixed(2)} USD</div>`;
 
             personalExpenses.forEach((exp, idx) => {
-                 personalHTML += `<div class="expense-row-list"><span>${exp.desc} <i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deletePersonalExpense(${idx})"></i></span><span>${symbol}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
+                const iconClass = getIconColorClass(exp.icon);
+                const displayIcon = exp.icon || 'fa-receipt';
+                const desc = exp.desc || 'Gasto';
+
+                // Mostrar símbolo de moneda correcto
+                const currSym = getCurrencySymbol(exp.currency);
+
+                personalHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} <i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deletePersonalExpense(${idx})"></i></span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
             });
             personalHTML += `<button class="btn-primary" style="font-size:0.8rem; padding:0.5rem; background:var(--primary);" onclick="openModal('personal-expense-modal')">+ Gasto Personal</button>`;
 
@@ -799,7 +928,7 @@
                 <div class="personal-expenses-box">${personalHTML}</div>
 
                 <ul class="activity-list">${renderActivitiesListHTML(day, activeDayIndex, symbol, rate, crcRate)}</ul>
-                <button class="btn-add-activity" onclick="openModal('add', ${activeDayIndex})"><i class="fas fa-plus"></i> Añadir Actividad</button>
+                <button class="btn-add-activity" onclick="openModal('activity-modal')"><i class="fas fa-plus"></i> Añadir Actividad</button>
                 
                 <div class="daily-expenses">
                     <div class="expense-title">Otros Gastos Diarios (${symbol})</div>
@@ -815,23 +944,20 @@
         function renderActivitiesListHTML(day, dayIndex, symbol, rate, crcRate) {
             if (day.activities.length === 0) return `<li style="text-align:center; color:var(--gray); padding:2rem; border:1px dashed #ccc; border-radius:8px;">Sin actividades planeadas.</li>`;
             return day.activities.map((act, actIndex) => {
-                let iconClass = 'act-icon-general';
-                if(['fa-utensils'].includes(act.icon)) iconClass = 'act-icon-food';
-                if(['fa-bus','fa-taxi','fa-subway'].includes(act.icon)) iconClass = 'act-icon-transport';
-                if(['fa-landmark','fa-university'].includes(act.icon)) iconClass = 'act-icon-culture';
-                if(['fa-plane'].includes(act.icon)) iconClass = 'act-icon-travel';
-                if(['fa-bed'].includes(act.icon)) iconClass = 'act-icon-lodging';
-                if(['fa-tree'].includes(act.icon)) iconClass = 'act-icon-nature';
-                if(['fa-shopping-bag'].includes(act.icon)) iconClass = 'act-icon-shopping';
-                if(['fa-glass-cheers'].includes(act.icon)) iconClass = 'act-icon-party';
+                let iconClass = getIconColorClass(act.icon);
 
                 const iconToDisplay = act.icon || 'fa-star';
                 const costVal = parseFloat(act.cost);
                 const currCode = act.currency || 'local'; 
-                let originalSymbol = currCode === 'usd' ? '$' : (currCode === 'crc' ? '₡' : symbol);
+                let originalSymbol = getCurrencySymbol(currCode);
                 const costUSD = convertToUSD(costVal, currCode);
                 const costCRC = costUSD * crcRate;
                 const costLocal = costUSD * rate; 
+
+                const isOwner = act.created_by === currentUser.id;
+                const isAdmin = currentUser.role === 'admin';
+                const canDelete = isOwner || isAdmin;
+                const deleteBtnStyle = canDelete ? "" : "opacity:0.3; cursor:not-allowed;";
 
                 return `
                 <li class="activity-item">
@@ -855,8 +981,8 @@
                         </div>
                     </div>
                     <div class="activity-actions">
-                        <button class="btn-sm btn-edit" onclick="openModal('edit', ${dayIndex}, ${actIndex})"><i class="fas fa-pen"></i> Editar</button>
-                        <button class="btn-sm btn-delete" onclick="deleteActivity(${dayIndex}, ${actIndex})"><i class="fas fa-trash"></i> Borrar</button>
+                        <button class="btn-sm btn-edit" onclick="openModal('activity-modal', ${dayIndex}, ${actIndex})"><i class="fas fa-pen"></i> Editar</button>
+                        <button class="btn-sm btn-delete" style="${deleteBtnStyle}" onclick="deleteActivity(${dayIndex}, ${actIndex})" title="${canDelete ? 'Borrar' : 'Solo puedes borrar lo que añades'}"><i class="fas fa-trash"></i> Borrar</button>
                     </div>
                 </li>`;
             }).join('');
@@ -877,6 +1003,24 @@
             return parseFloat(amount).toFixed(2);
         }
 
+        function getCurrencySymbol(code) {
+            if (code === 'usd') return '$';
+            if (code === 'crc') return '₡';
+            return appData.currencySymbol || '$';
+        }
+        
+        function getIconColorClass(iconId) {
+            if(!iconId) return '';
+            if(['fa-utensils'].includes(iconId)) return 'act-icon-food';
+            if(['fa-bus','fa-taxi','fa-subway','fa-plane'].includes(iconId)) return 'act-icon-transport';
+            if(['fa-landmark','fa-university','fa-ticket-alt'].includes(iconId)) return 'act-icon-culture';
+            if(['fa-bed'].includes(iconId)) return 'act-icon-lodging';
+            if(['fa-tree'].includes(iconId)) return 'act-icon-nature';
+            if(['fa-shopping-bag'].includes(iconId)) return 'act-icon-shopping';
+            if(['fa-glass-cheers'].includes(iconId)) return 'act-icon-party';
+            return '';
+        }
+
         function updateExpense(dayIndex, type, value) {
             appData.days[dayIndex].expenses[type] = parseFloat(value) || 0;
             saveToStorage();
@@ -893,19 +1037,57 @@
             renderActiveDay();
         }
 
-        // --- GESTION DE ACTIVIDADES ---
-        function openModal(mode, dayIndex, actIndex = null) {
-            const modalId = (mode === 'add' || mode === 'edit') ? 'activity-modal' : mode;
-            document.getElementById(modalId).classList.add('active');
+        // --- FUNCIONES GENÉRICAS PARA GRID DE ICONOS ---
+        function renderIconGrid(containerId, inputId, preselectedIcon = 'fa-star') {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            container.innerHTML = ''; 
             
+            CATEGORIES.forEach(cat => {
+                const btn = document.createElement('div');
+                btn.className = 'icon-btn';
+                btn.dataset.icon = cat.id;
+                btn.dataset.cat = cat.cat;
+                btn.onclick = () => selectIcon(cat.id, inputId);
+                
+                btn.innerHTML = `
+                    <i class="fas ${cat.id}"></i>
+                    <span>${cat.label}</span>
+                `;
+                container.appendChild(btn);
+            });
+            selectIcon(preselectedIcon, inputId);
+        }
+
+        function selectIcon(iconClass, inputId) {
+            document.getElementById(inputId).value = iconClass;
+            const container = document.getElementById(inputId).parentElement.querySelector('.icon-grid');
+            if(container) {
+                const buttons = container.querySelectorAll('.icon-btn');
+                buttons.forEach(btn => {
+                    if(btn.dataset.icon === iconClass) btn.classList.add('selected');
+                    else btn.classList.remove('selected');
+                });
+            }
+        }
+
+        // --- GESTIÓN DE MODALES ---
+        function openModal(modalId, param1 = null, param2 = null) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.add('active');
+
+            // Lógica específica por modal
             if (modalId === 'activity-modal') {
-                document.getElementById('modal-day-index').value = dayIndex;
-                document.getElementById('modal-activity-index').value = actIndex !== null ? actIndex : '';
+                document.getElementById('modal-day-index').value = param1;
+                document.getElementById('modal-activity-index').value = param2 !== null ? param2 : '';
                 const form = document.getElementById('activity-form');
-                if (mode === 'edit' && actIndex !== null) {
+                
+                renderIconGrid('activity-icon-grid', 'act-icon');
+
+                if (param2 !== null) { // Editar
                     document.getElementById('modal-title').textContent = 'Editar Actividad';
-                    const act = appData.days[dayIndex].activities[actIndex];
-                    document.getElementById('act-icon').value = act.icon || 'fa-star';
+                    const act = appData.days[param1].activities[param2];
+                    selectIcon(act.icon || 'fa-star', 'act-icon');
                     document.getElementById('act-time').value = act.time;
                     document.getElementById('act-name').value = act.name;
                     document.getElementById('act-location').value = act.location;
@@ -913,17 +1095,31 @@
                     document.getElementById('act-link').value = act.link;
                     document.getElementById('act-cost').value = act.cost;
                     document.getElementById('act-currency').value = act.currency || 'local';
-                } else {
+                } else { // Crear
                     document.getElementById('modal-title').textContent = 'Añadir Actividad';
                     form.reset();
-                    document.getElementById('act-icon').value = 'fa-star';
+                    selectIcon('fa-star', 'act-icon');
                     document.getElementById('act-cost').value = 0;
                     document.getElementById('act-currency').value = 'local';
                 }
+            } 
+            else if (modalId === 'shared-expense-modal') {
+                renderIconGrid('shared-icon-grid', 'shared-icon');
+                document.getElementById('shared-cost').value = '';
+                document.getElementById('shared-desc').value = '';
+                document.getElementById('shared-currency').value = 'local'; // Resetear a local
+            }
+            else if (modalId === 'personal-expense-modal') {
+                renderIconGrid('personal-icon-grid', 'personal-icon');
+                document.getElementById('personal-cost').value = '';
+                document.getElementById('personal-desc').value = '';
+                document.getElementById('personal-currency').value = 'local'; // Resetear a local
             }
         }
 
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+        }
         
         async function saveActivity(e) {
             e.preventDefault();
@@ -938,10 +1134,15 @@
                 howToGet: document.getElementById('act-transport').value,
                 link: document.getElementById('act-link').value,
                 cost: parseFloat(document.getElementById('act-cost').value),
-                currency: document.getElementById('act-currency').value 
+                currency: document.getElementById('act-currency').value,
+                created_by: currentUser.id 
             };
 
             if (actIndexStr !== '') {
+                const originalAct = appData.days[dayIndex].activities[parseInt(actIndexStr)];
+                if(originalAct && originalAct.created_by) {
+                    activityData.created_by = originalAct.created_by;
+                }
                 appData.days[dayIndex].activities[parseInt(actIndexStr)] = activityData;
             } else {
                 appData.days[dayIndex].activities.push(activityData);
@@ -952,6 +1153,15 @@
         }
 
         async function deleteActivity(dayIndex, actIndex) {
+            const act = appData.days[dayIndex].activities[actIndex];
+            const isOwner = act.created_by === currentUser.id;
+            const isAdmin = currentUser.role === 'admin';
+
+            if (!isOwner && !isAdmin) {
+                showToast("No puedes borrar esta actividad. Solo puedes borrar lo que tú añades.", "error");
+                return;
+            }
+
             if(confirm("¿Eliminar esta actividad?")) {
                 appData.days[dayIndex].activities.splice(actIndex, 1);
                 await saveToStorage();
@@ -961,9 +1171,11 @@
         // --- GESTION GASTOS COMPARTIDOS (ADMIN) ---
         async function saveSharedExpense(e) {
             e.preventDefault();
+            const icon = document.getElementById('shared-icon').value;
+            const currency = document.getElementById('shared-currency').value; // LEER MONEDA
             const desc = document.getElementById('shared-desc').value;
             const cost = document.getElementById('shared-cost').value;
-            sharedExpenses.push({ desc, cost });
+            sharedExpenses.push({ icon, desc, cost, currency }); // GUARDAR MONEDA
             await saveToStorage();
             closeModal('shared-expense-modal');
         }
@@ -977,9 +1189,11 @@
         // --- GESTION GASTOS PERSONALES (USER) ---
         async function savePersonalExpense(e) {
             e.preventDefault();
+            const icon = document.getElementById('personal-icon').value;
+            const currency = document.getElementById('personal-currency').value; // LEER MONEDA
             const desc = document.getElementById('personal-desc').value;
             const cost = document.getElementById('personal-cost').value;
-            personalExpenses.push({ desc, cost });
+            personalExpenses.push({ icon, desc, cost, currency }); // GUARDAR MONEDA
             await saveToStorage();
             closeModal('personal-expense-modal');
         }
@@ -1044,7 +1258,6 @@
             const pass = document.getElementById('user-pass').value;
 
             if(id) {
-                // UPDATE
                 const updateData = { full_name: name, email: email };
                 if(pass) updateData.password = pass;
                 
@@ -1056,7 +1269,6 @@
                     loadUsersList();
                 }
             } else {
-                // CREATE
                 const { error } = await supabaseClient.from('app_users').insert({
                     full_name: name, email: email, password: pass, role: 'user'
                 });
@@ -1140,8 +1352,9 @@
                 grandTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
             });
-            sharedExpenses.forEach(exp => { grandTotalUSD += (parseFloat(exp.cost) / rate); });
-            personalExpenses.forEach(exp => { grandTotalUSD += (parseFloat(exp.cost) / rate); });
+            // Usar convertToUSD para gastos compartidos y personales ahora que tienen moneda
+            sharedExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
+            personalExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
 
             return { usd: grandTotalUSD, crc: grandTotalUSD * crcRate, local: grandTotalUSD * rate };
         }
