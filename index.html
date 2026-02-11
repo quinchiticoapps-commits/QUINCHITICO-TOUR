@@ -723,6 +723,7 @@
                 card.className = 'trip-card';
                 card.onclick = () => loadTrip(trip.id, trip);
 
+                // Solo el admin puede ver el botón de borrar
                 const deleteBtn = (currentUser.role === 'admin') ? 
                     `<button class="btn-icon-small" onclick="event.stopPropagation(); deleteTrip(${trip.id})" title="Borrar"><i class="fas fa-trash"></i></button>` : '';
 
@@ -806,11 +807,45 @@
             showPlanner();
         }
 
+        // --- CORRECCIÓN: FUNCIÓN DELETE TRIP CON BORRADO EN CASCADA ---
         async function deleteTrip(id) {
-            if(!confirm("¿Borrar viaje?")) return;
-            const { error } = await supabaseClient.from('trips').delete().eq('id', id);
-            if(error) showToast('Error borrando', 'error');
-            else loadDashboard();
+            // 1. Verificar que sea administrador
+            if (currentUser.role !== 'admin') {
+                showToast('Solo el administrador puede borrar viajes.', 'error');
+                return;
+            }
+
+            if(!confirm("¿Estás seguro de borrar este viaje? Se eliminarán todos los gastos y datos asociados.")) return;
+
+            try {
+                // 2. Primero borramos los registros en user_trip_expenses para evitar el error de Foreign Key
+                const { error: expensesError } = await supabaseClient
+                    .from('user_trip_expenses')
+                    .delete()
+                    .eq('trip_id', id);
+
+                if (expensesError) {
+                    console.error("Error borrando gastos relacionados:", expensesError);
+                    throw expensesError;
+                }
+
+                // 3. Luego borramos el viaje principal
+                const { error: tripError } = await supabaseClient
+                    .from('trips')
+                    .delete()
+                    .eq('id', id);
+
+                if (tripError) {
+                    throw tripError;
+                }
+
+                showToast('Viaje borrado exitosamente', 'success');
+                loadDashboard();
+
+            } catch (error) {
+                console.error(error);
+                showToast('Error borrando: ' + error.message, 'error');
+            }
         }
 
         // --- UI PLANNER ---
@@ -889,6 +924,7 @@
                 // Mostrar símbolo de moneda correcto
                 const currSym = getCurrencySymbol(exp.currency);
                 
+                // Solo admin puede borrar gastos compartidos
                 const delBtn = (currentUser.role === 'admin') ? 
                     `<i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deleteSharedExpense(${idx})"></i>` : '';
                 sharedHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} ${delBtn}</span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
@@ -1180,6 +1216,10 @@
             closeModal('shared-expense-modal');
         }
         async function deleteSharedExpense(idx) {
+            if(currentUser.role !== 'admin') {
+                showToast("Solo el admin puede borrar gastos compartidos.", "error");
+                return;
+            }
             if(confirm("¿Borrar gasto compartido?")) {
                 sharedExpenses.splice(idx, 1);
                 await saveToStorage();
