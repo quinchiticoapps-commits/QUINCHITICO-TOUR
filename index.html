@@ -154,8 +154,9 @@
         /* SECCIONES NUEVAS (GASTOS) */
         .shared-expenses-box { border: 1px solid #fdcb6e; background: #fffbf0; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
         .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .expense-row-list { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
+        .expense-row-list { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
         .expense-row-list:hover { background: rgba(0,0,0,0.02); }
+        .expense-details-col { display: flex; flex-direction: column; gap: 2px; }
 
         /* Summary Styles */
         .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
@@ -415,7 +416,7 @@
     <div class="modal-overlay" id="shared-expense-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3>Gasto Compartido (Admin)</h3>
+                <h3>Gasto Compartido (Día ${activeDayIndex + 1})</h3>
                 <button class="close-modal" onclick="closeModal('shared-expense-modal')">&times;</button>
             </div>
             <form onsubmit="saveSharedExpense(event)">
@@ -428,7 +429,11 @@
 
                 <div class="form-group"><label>Descripción (Opcional)</label><input type="text" id="shared-desc" placeholder="Ej: Hotel Noche 1"></div>
                 
-                <!-- NUEVO: SELECTOR DE MONEDA Y COSTO -->
+                <!-- CAMPOS: LUGAR Y SITIO WEB -->
+                <div class="form-group"><label>Lugar</label><input type="text" id="shared-location" placeholder="Ej: Restaurante Central, París"></div>
+                <div class="form-group"><label>Sitio Web</label><input type="url" id="shared-link" placeholder="https://..."></div>
+                
+                <!-- SELECTOR DE MONEDA Y COSTO -->
                 <div class="form-row">
                     <div class="form-group">
                         <label>Moneda</label>
@@ -929,6 +934,14 @@
             const dailyItemsTotal = (day.daily_items || []).reduce((acc, item) => acc + (parseFloat(item.cost) || 0), 0);
             dayTotalUSD += (dailyItemsTotal / rate);
 
+            // --- GASTOS COMPARTIDOS DEL DÍA ACTIVO ---
+            // Filtramos para mostrar solo los de este día (o los viejos sin día definido)
+            const daySharedExpenses = sharedExpenses.filter(exp => exp.dayIndex === undefined || exp.dayIndex === activeDayIndex);
+            
+            daySharedExpenses.forEach(exp => {
+                dayTotalUSD += convertToUSD(exp.cost, exp.currency);
+            });
+
             const dayTotalLocal = dayTotalUSD * rate;
             const dayTotalCRC = dayTotalUSD * crcRate;
             const tripTotals = calculateTripTotals();
@@ -937,20 +950,44 @@
             const fullDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
             const capitalDate = fullDate.charAt(0).toUpperCase() + fullDate.slice(1);
 
-            // --- GASTOS COMPARTIDOS ---
-            let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Admin)</h4>`;
-            const sharedTotalUSD = sharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
-            sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total Viaje: $${sharedTotalUSD.toFixed(2)} USD</div>`;
+            // --- RENDERIZADO DE GASTOS COMPARTIDOS (FILTRADO POR DÍA) ---
+            let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Día ${activeDayIndex+1})</h4>`;
             
-            sharedExpenses.forEach((exp, idx) => {
+            // Mostramos el total de ESTE DÍA, no el total del viaje
+            const daySharedTotalUSD = daySharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
+            sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total del Día: $${daySharedTotalUSD.toFixed(2)} USD</div>`;
+            
+            // Iteramos SOLO los que aplican a este día para mostrar la lista
+            sharedExpenses.forEach((exp, globalIdx) => {
+                // Verificamos si pertenece al día actual (o si es un gasto viejo global)
+                if (exp.dayIndex !== undefined && exp.dayIndex !== activeDayIndex) return;
+
                 const iconClass = getIconColorClass(exp.icon);
                 const displayIcon = exp.icon || 'fa-receipt';
                 const desc = exp.desc || 'Gasto';
                 const currSym = getCurrencySymbol(exp.currency);
                 
+                // Datos nuevos
+                const loc = exp.location ? `<div class="activity-meta" style="font-size:0.8rem; margin-top:4px;"><i class="fas fa-map-marker-alt" style="color:var(--danger)"></i> ${exp.location}</div>` : '';
+                const link = exp.link ? `<div class="activity-meta" style="font-size:0.8rem;"><i class="fas fa-globe" style="color:var(--primary)"></i> <a href="${exp.link}" target="_blank" style="color:var(--secondary);">Sitio Web</a></div>` : '';
+                
                 const delBtn = (currentUser.role === 'admin') ? 
-                    `<i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deleteSharedExpense(${idx})"></i>` : '';
-                sharedHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} ${delBtn}</span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
+                    `<i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteSharedExpense(${globalIdx})"></i>` : '';
+                
+                sharedHTML += `
+                    <div class="expense-row-list">
+                        <div class="expense-details-col" style="flex:1;">
+                            <div style="display:flex; align-items:center; gap:6px; font-weight:600;">
+                                <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
+                            </div>
+                            ${loc}
+                            ${link}
+                        </div>
+                        <div style="text-align:right;">
+                            <div>${currSym}${parseFloat(exp.cost).toFixed(2)}</div>
+                            ${delBtn}
+                        </div>
+                    </div>`;
             });
             if(currentUser.role === 'admin') {
                 sharedHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:5px;" onclick="openModal('shared-expense-modal')">+ Gasto Compartido</button>`;
@@ -1305,10 +1342,17 @@
                 }
             } 
             else if (modalId === 'shared-expense-modal') {
+                // Actualizamos el título del modal para reflejar el día activo
+                const headerTitle = document.querySelector('#shared-expense-modal .modal-header h3');
+                if(headerTitle) headerTitle.textContent = `Gasto Compartido (Día ${activeDayIndex + 1})`;
+
                 renderIconGrid('shared-icon-grid', 'shared-icon');
                 document.getElementById('shared-cost').value = '';
                 document.getElementById('shared-desc').value = '';
                 document.getElementById('shared-currency').value = 'local';
+                // Limpiar campos
+                document.getElementById('shared-location').value = '';
+                document.getElementById('shared-link').value = '';
             }
             else if (modalId === 'personal-expense-modal') {
                 renderIconGrid('personal-icon-grid', 'personal-icon');
@@ -1379,18 +1423,22 @@
             const currency = document.getElementById('shared-currency').value;
             const desc = document.getElementById('shared-desc').value;
             const cost = parseFloat(document.getElementById('shared-cost').value) || 0;
-            sharedExpenses.push({ icon, desc, cost, currency });
+            const location = document.getElementById('shared-location').value;
+            const link = document.getElementById('shared-link').value;
+
+            // NUEVO: Asignar al día activo
+            sharedExpenses.push({ icon, desc, cost, currency, location, link, dayIndex: activeDayIndex });
             
             const saved = await saveToStorage();
             if (saved) closeModal('shared-expense-modal');
         }
-        async function deleteSharedExpense(idx) {
+        async function deleteSharedExpense(globalIdx) {
             if(currentUser.role !== 'admin') {
                 showToast("Solo el admin puede borrar gastos compartidos.", "error");
                 return;
             }
             if(confirm("¿Borrar gasto compartido?")) {
-                sharedExpenses.splice(idx, 1);
+                sharedExpenses.splice(globalIdx, 1);
                 await saveToStorage();
             }
         }
@@ -1516,6 +1564,10 @@
                 // Incluir items diarios
                 const dailyItems = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
                 totalUSD += (dailyItems / rate);
+                // Incluir gastos compartidos del día
+                sharedExpenses.filter(exp => exp.dayIndex === idx).forEach(exp => {
+                    totalUSD += convertToUSD(exp.cost, exp.currency);
+                });
 
                 return { idx: idx + 1, date: day.date, total: totalUSD };
             }).sort((a,b) => b.total - a.total);
