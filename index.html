@@ -1,9 +1,3 @@
-Entendido. El código está diseñado exactamente para hacer eso: cuando añades un gasto en el formulario de "Gastos Diarios" (abajo), se guarda estrictamente dentro de ese día específico (`appData.days[activeDayIndex]`). Al cambiar de pestaña, el código carga los datos únicos de ese día (`day.daily_items`).
-
-Si lo ves en todos los días, es posible que estés usando por error la sección de "Mis Gastos Personales" (que sí es global). La sección de abajo ("Gastos Diarios") es la que es exclusiva por día.
-
-Aquí tienes el código completo, verificado para asegurar que la separación de días funciona perfectamente:
-
 ```html
 <!DOCTYPE html>
 <html lang="es">
@@ -1642,3 +1636,4 @@ Aquí tienes el código completo, verificado para asegurar que la separación de
 </body>
 </html>
 ```
+
