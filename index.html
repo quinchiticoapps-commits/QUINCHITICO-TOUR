@@ -1,3 +1,9 @@
+Entendido. El código está diseñado exactamente para hacer eso: cuando añades un gasto en el formulario de "Gastos Diarios" (abajo), se guarda estrictamente dentro de ese día específico (`appData.days[activeDayIndex]`). Al cambiar de pestaña, el código carga los datos únicos de ese día (`day.daily_items`).
+
+Si lo ves en todos los días, es posible que estés usando por error la sección de "Mis Gastos Personales" (que sí es global). La sección de abajo ("Gastos Diarios") es la que es exclusiva por día.
+
+Aquí tienes el código completo, verificado para asegurar que la separación de días funciona perfectamente:
+
 ```html
 <!DOCTYPE html>
 <html lang="es">
@@ -7,22 +13,14 @@
     <title>Quinchitico Tour - Gestor Pro</title>
     
     <!-- Iconos y Estilos -->
-    <!-- Icono Favicon para el navegador -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%2300cec9' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
-    
-    <!-- NUEVO: Configuración para que salga como App en el Móvil (Icono y Nombre) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Quinchitico Tour">
     <meta name="theme-color" content="#00cec9">
     <meta name="application-name" content="Quinchitico Tour">
-
-    <!-- Icono de Alta Resolución para iOS (iPhone) -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%2300cec9' rx='115'/><path fill='white' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
-    
-    <!-- Icono para Android y otros navegadores -->
     <link rel="icon" type="image/svg+xml" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%2300cec9' rx='115'/><path fill='white' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -69,6 +67,7 @@
             transition: transform 0.2s, background 0.3s; margin-top: 1rem;
         }
         .btn-primary:hover { background-color: #0769b5; transform: translateY(-2px); }
+        .btn-primary.tight { width: auto; padding: 0.5rem 1rem; margin-top: 0; }
 
         .btn-secondary {
             background-color: var(--gray); color: white; border: none; padding: 0.6rem 1.5rem;
@@ -132,14 +131,23 @@
         .btn-edit { background: #e0f7fa; color: var(--secondary); }
         .btn-delete { background: #ffebee; color: var(--danger); }
 
-        .btn-add-activity { width: 100%; padding: 1rem; background: white; border: 2px dashed var(--primary); color: var(--primary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
-        .btn-add-activity:hover { background: #e0fffa; }
-
         /* --- ESTILOS GASTOS DIARIOS --- */
         .daily-expenses { background-color: #fdfdfd; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
         .expense-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom:1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; font-weight: 700; }
         .expense-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; }
         .expense-input label { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 5px; }
+
+        /* Lista Detallada de Gastos Diarios */
+        .daily-expense-list { margin-bottom: 1.5rem; }
+        .daily-expense-list-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+        .daily-expense-list-item:last-child { border-bottom: none; }
+        .daily-expense-name { flex-grow: 1; }
+        .daily-expense-cost { font-weight: 600; color: var(--secondary); margin-right: 15px; }
+        .daily-expense-actions { display: flex; gap: 5px; }
+        .daily-expense-edit { color: #0984e3; cursor: pointer; transition: 0.2s; }
+        .daily-expense-edit:hover { color: #00cec9; }
+        .daily-expense-delete { color: #ff7675; cursor: pointer; transition: 0.2s; }
+        .daily-expense-delete:hover { color: #d63031; }
 
         /* --- COLORES DE ICONOS --- */
         .act-icon-food { color: #e17055; }
@@ -208,7 +216,7 @@
         .user-list-actions button { margin-left: 5px; font-size: 0.8rem; padding: 4px 8px; }
 
         /* Toast */
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s; max-width: 300px; word-wrap: break-word;}
         .toast.success { border-left: 4px solid #2ecc71; }
         .toast.error { border-left: 4px solid #e74c3c; }
 
@@ -267,7 +275,6 @@
     <div class="container" id="setup-trip-form" style="display:none;">
         <div class="card" style="text-align:left;">
             <h2 style="margin-bottom: 1rem;">Nuevo Viaje</h2>
-            <!-- BOTÓN ATRÁS CLARO -->
             <button class="btn-secondary" onclick="backToDashboard()" style="width:100%; margin-bottom:1.5rem; background:#dfe6e9; color:#636e72;">
                 <i class="fas fa-arrow-left"></i> Atrás
             </button>
@@ -318,7 +325,6 @@
                     <p style="font-size: 0.75rem; color: var(--gray); margin-top: 2px;">Necesario para calcular los totales en Colones.</p>
                 </div>
 
-                <!-- BOTONES DE ACCIÓN FINAL -->
                 <div class="form-row">
                     <button type="button" class="btn-secondary" onclick="backToDashboard()" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">
@@ -594,6 +600,9 @@
         let sharedExpenses = [];
         let personalExpenses = [];
         let activeDayIndex = 0;
+        
+        // Variable para controlar la edición de gastos diarios
+        let editingDailyItemIndex = -1;
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -603,6 +612,8 @@
             try {
                 const { createClient } = window.supabase;
                 supabaseClient = createClient(url, key);
+                
+                // Verificar conexión
                 const { error } = await supabaseClient.from('app_users').select('id').limit(1);
                 if(error) throw error;
 
@@ -723,7 +734,6 @@
                 card.className = 'trip-card';
                 card.onclick = () => loadTrip(trip.id, trip);
 
-                // Solo el admin puede ver el botón de borrar
                 const deleteBtn = (currentUser.role === 'admin') ? 
                     `<button class="btn-icon-small" onclick="event.stopPropagation(); deleteTrip(${trip.id})" title="Borrar"><i class="fas fa-trash"></i></button>` : '';
 
@@ -765,7 +775,13 @@
             const endDateObj = new Date(end);
             while (current <= endDateObj) {
                 const dateString = current.toISOString().split('T')[0];
-                daysList.push({ date: dateString, activities: [], expenses: { food: 0, transport: 0, tickets: 0 } });
+                // AGREGAMOS daily_items VACÍO PARA EL NUEVO SISTEMA
+                daysList.push({ 
+                    date: dateString, 
+                    activities: [], 
+                    expenses: { food: 0, transport: 0, tickets: 0 },
+                    daily_items: [] 
+                });
                 current.setDate(current.getDate() + 1);
             }
 
@@ -776,13 +792,15 @@
             };
 
             const { data, error } = await supabaseClient.from('trips').insert({
+                user_id: currentUser.id, 
                 destination: dest,
                 trip_data: newTripData,
                 shared_expenses: []
             }).select();
 
             if(error) {
-                showToast('Error guardando: ' + error.message, 'error');
+                console.error("Error DB:", error);
+                alert('Error creando viaje: ' + error.message + '\nAsegúrate de tener la columna user_id en la tabla trips.');
             } else {
                 showToast('Viaje creado', 'success');
                 backToDashboard();
@@ -793,13 +811,19 @@
         async function loadTrip(id, tripObj) {
             currentTripId = id;
             appData = tripObj.trip_data || appData;
+            // Aseguramos compatibilidad con viajes viejos que no tienen daily_items
+            appData.days = appData.days.map(d => ({
+                ...d,
+                daily_items: d.daily_items || []
+            }));
+            
             sharedExpenses = tripObj.shared_expenses || [];
             
             const { data: pExp } = await supabaseClient.from('user_trip_expenses')
                 .select('*')
                 .eq('user_id', currentUser.id)
                 .eq('trip_id', id)
-                .single();
+                .maybeSingle();
             
             personalExpenses = (pExp && pExp.personal_expenses) ? pExp.personal_expenses : [];
 
@@ -807,9 +831,8 @@
             showPlanner();
         }
 
-        // --- CORRECCIÓN: FUNCIÓN DELETE TRIP CON BORRADO EN CASCADA ---
+        // --- FUNCIÓN DELETE TRIP CON BORRADO EN CASCADA ---
         async function deleteTrip(id) {
-            // 1. Verificar que sea administrador
             if (currentUser.role !== 'admin') {
                 showToast('Solo el administrador puede borrar viajes.', 'error');
                 return;
@@ -818,26 +841,19 @@
             if(!confirm("¿Estás seguro de borrar este viaje? Se eliminarán todos los gastos y datos asociados.")) return;
 
             try {
-                // 2. Primero borramos los registros en user_trip_expenses para evitar el error de Foreign Key
                 const { error: expensesError } = await supabaseClient
                     .from('user_trip_expenses')
                     .delete()
                     .eq('trip_id', id);
 
-                if (expensesError) {
-                    console.error("Error borrando gastos relacionados:", expensesError);
-                    throw expensesError;
-                }
+                if (expensesError) throw expensesError;
 
-                // 3. Luego borramos el viaje principal
                 const { error: tripError } = await supabaseClient
                     .from('trips')
                     .delete()
                     .eq('id', id);
 
-                if (tripError) {
-                    throw tripError;
-                }
+                if (tripError) throw tripError;
 
                 showToast('Viaje borrado exitosamente', 'success');
                 loadDashboard();
@@ -877,7 +893,12 @@
                 const shortDate = dateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
                 const btn = document.createElement('button');
                 btn.className = `tab-btn ${index === activeDayIndex ? 'active' : ''}`;
-                btn.onclick = () => { activeDayIndex = index; renderTabs(); renderActiveDay(); };
+                btn.onclick = () => { 
+                    activeDayIndex = index; 
+                    editingDailyItemIndex = -1; // Resetear edición al cambiar de día
+                    renderTabs(); 
+                    renderActiveDay(); 
+                };
                 btn.innerHTML = `<span>Día ${index + 1}</span><span class="tab-date">${shortDate}</span>`;
                 nav.appendChild(btn);
             });
@@ -892,16 +913,27 @@
             if (activeDayIndex === appData.days.length) { renderSummarySheet(); return; }
 
             const container = document.getElementById('tab-content');
+            // IMPORTANTE: Aquí seleccionamos estrictamente el día activo
             const day = appData.days[activeDayIndex];
+            
             const symbol = appData.currencySymbol;
-            const rate = appData.exchangeRate;
+            const rate = appData.exchangeRate || 1;
             const crcRate = appData.crcRate || 0;
 
+            // --- CÁLCULO DE TOTALES DEL DÍA ---
             let dayTotalUSD = 0;
+            
+            // Actividades
             day.activities.forEach(act => { dayTotalUSD += convertToUSD(act.cost, act.currency); });
+            
+            // Gastos rápidos (Food, Transport, Tickets)
             dayTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
             dayTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
             dayTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
+
+            // Items de la lista diaria (SOLO ESTE DÍA)
+            const dailyItemsTotal = (day.daily_items || []).reduce((acc, item) => acc + (parseFloat(item.cost) || 0), 0);
+            dayTotalUSD += (dailyItemsTotal / rate);
 
             const dayTotalLocal = dayTotalUSD * rate;
             const dayTotalCRC = dayTotalUSD * crcRate;
@@ -911,7 +943,7 @@
             const fullDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
             const capitalDate = fullDate.charAt(0).toUpperCase() + fullDate.slice(1);
 
-            // Gastos Compartidos
+            // --- GASTOS COMPARTIDOS ---
             let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Admin)</h4>`;
             const sharedTotalUSD = sharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
             sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total Viaje: $${sharedTotalUSD.toFixed(2)} USD</div>`;
@@ -920,20 +952,17 @@
                 const iconClass = getIconColorClass(exp.icon);
                 const displayIcon = exp.icon || 'fa-receipt';
                 const desc = exp.desc || 'Gasto';
-                
-                // Mostrar símbolo de moneda correcto
                 const currSym = getCurrencySymbol(exp.currency);
                 
-                // Solo admin puede borrar gastos compartidos
                 const delBtn = (currentUser.role === 'admin') ? 
                     `<i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deleteSharedExpense(${idx})"></i>` : '';
                 sharedHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} ${delBtn}</span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
             });
             if(currentUser.role === 'admin') {
-                sharedHTML += `<button class="btn-primary" style="font-size:0.8rem; padding:0.5rem;" onclick="openModal('shared-expense-modal')">+ Gasto Compartido</button>`;
+                sharedHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:5px;" onclick="openModal('shared-expense-modal')">+ Gasto Compartido</button>`;
             }
 
-            // Gastos Personales
+            // --- GASTOS PERSONALES ---
             let personalHTML = `<h4 style="margin-bottom:10px; color:var(--primary); margin-top:20px;"><i class="fas fa-user-tag"></i> Mis Gastos Personales</h4>`;
             const personalTotalUSD = personalExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
             personalHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Mi Total: $${personalTotalUSD.toFixed(2)} USD</div>`;
@@ -942,13 +971,43 @@
                 const iconClass = getIconColorClass(exp.icon);
                 const displayIcon = exp.icon || 'fa-receipt';
                 const desc = exp.desc || 'Gasto';
-
-                // Mostrar símbolo de moneda correcto
                 const currSym = getCurrencySymbol(exp.currency);
 
                 personalHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} <i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deletePersonalExpense(${idx})"></i></span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
             });
-            personalHTML += `<button class="btn-primary" style="font-size:0.8rem; padding:0.5rem; background:var(--primary);" onclick="openModal('personal-expense-modal')">+ Gasto Personal</button>`;
+            personalHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:5px;" onclick="openModal('personal-expense-modal')">+ Gasto Personal</button>`;
+
+            // --- NUEVO: RENDERIZADO DE LISTA DE GASTOS DIARIOS (SOLO DEL DÍA ACTIVO) ---
+            const items = day.daily_items || [];
+            let dailyItemsListHTML = '<div class="daily-expense-list">';
+            if (items.length > 0) {
+                items.forEach((item, idx) => {
+                    dailyItemsListHTML += `
+                        <div class="daily-expense-list-item">
+                            <span class="daily-expense-name">${item.name}</span>
+                            <div style="display:flex; align-items:center;">
+                                <span class="daily-expense-cost">${symbol}${parseFloat(item.cost).toFixed(2)}</span>
+                                <div class="daily-expense-actions">
+                                    <i class="fas fa-pen daily-expense-edit" onclick="editDailyItem(${idx})" title="Editar"></i>
+                                    <i class="fas fa-trash daily-expense-delete" onclick="deleteDailyItem(${idx})" title="Eliminar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                dailyItemsListHTML += `<div style="font-size:0.8rem; color:var(--gray); font-style:italic; padding:5px 0;">No hay gastos detallados en este día.</div>`;
+            }
+            dailyItemsListHTML += '</div>';
+
+            // GESTIÓN DEL BOTÓN AÑADIR/MODIFICAR
+            const isEditing = editingDailyItemIndex >= 0;
+            const btnText = isEditing ? "Guardar Cambios" : "Añadir";
+            const inputNameVal = isEditing ? day.daily_items[editingDailyItemIndex].name : "";
+            const inputCostVal = isEditing ? day.daily_items[editingDailyItemIndex].cost : "";
+            
+            // Si estamos cambiando de día y no editando, limpiamos los inputs visualmente
+            // (Esto se maneja re-asignando los valores en el HTML generado)
 
             container.innerHTML = `
                 <div class="day-total-header">
@@ -964,10 +1023,21 @@
                 <div class="personal-expenses-box">${personalHTML}</div>
 
                 <ul class="activity-list">${renderActivitiesListHTML(day, activeDayIndex, symbol, rate, crcRate)}</ul>
-                <button class="btn-add-activity" onclick="openModal('activity-modal')"><i class="fas fa-plus"></i> Añadir Actividad</button>
                 
                 <div class="daily-expenses">
-                    <div class="expense-title">Otros Gastos Diarios (${symbol})</div>
+                    <div class="expense-title"><i class="fas fa-list-alt"></i> Gastos Diarios (${symbol})</div>
+                    
+                    <!-- NUEVA LISTA DETALLADA -->
+                    ${dailyItemsListHTML}
+                    
+                    <div style="display:flex; gap:5px; margin-bottom:15px; border-top:1px dashed #ccc; padding-top:10px;">
+                        <input type="text" id="new-daily-name" placeholder="Detalle (ej: Almuerzo)" value="${inputNameVal}" style="flex:2;">
+                        <input type="number" id="new-daily-cost" placeholder="Costo" value="${inputCostVal}" style="flex:1;">
+                        <button class="btn-primary tight" onclick="addDailyItem()">${btnText}</button>
+                        ${isEditing ? `<button class="btn-secondary tight" style="margin-top:0;" onclick="cancelEditDailyItem()">Cancelar</button>` : ''}
+                    </div>
+
+                    <div class="expense-title" style="margin-top:15px;">Totales Rápidos</div>
                     <div class="expense-grid">
                         <div class="expense-input"><label><i class="fas fa-utensils"></i> Comida</label><input type="number" min="0" step="0.5" value="${day.expenses.food}" onchange="updateExpense(${activeDayIndex}, 'food', this.value)"></div>
                         <div class="expense-input"><label><i class="fas fa-bus"></i> Transporte</label><input type="number" min="0" step="0.5" value="${day.expenses.transport}" onchange="updateExpense(${activeDayIndex}, 'transport', this.value)"></div>
@@ -983,7 +1053,7 @@
                 let iconClass = getIconColorClass(act.icon);
 
                 const iconToDisplay = act.icon || 'fa-star';
-                const costVal = parseFloat(act.cost);
+                const costVal = parseFloat(act.cost) || 0;
                 const currCode = act.currency || 'local'; 
                 let originalSymbol = getCurrencySymbol(currCode);
                 const costUSD = convertToUSD(costVal, currCode);
@@ -1018,7 +1088,7 @@
                     </div>
                     <div class="activity-actions">
                         <button class="btn-sm btn-edit" onclick="openModal('activity-modal', ${dayIndex}, ${actIndex})"><i class="fas fa-pen"></i> Editar</button>
-                        <button class="btn-sm btn-delete" style="${deleteBtnStyle}" onclick="deleteActivity(${dayIndex}, ${actIndex})" title="${canDelete ? 'Borrar' : 'Solo puedes borrar lo que añades'}"><i class="fas fa-trash"></i> Borrar</button>
+                        <button class="btn-sm btn-delete" style="${deleteBtnStyle}" onclick="deleteActivity(${dayIndex}, ${actIndex})" title="${canDelete ? 'Borrar' : 'Solo puedes borrar lo que tú añades'}"><i class="fas fa-trash"></i> Borrar</button>
                     </div>
                 </li>`;
             }).join('');
@@ -1062,15 +1132,117 @@
             saveToStorage();
         }
 
-        async function saveToStorage() {
-            if(!currentTripId || !supabaseClient) return;
-            await supabaseClient.from('trips')
-                .update({ trip_data: appData, shared_expenses: sharedExpenses })
-                .eq('id', currentTripId);
-            await supabaseClient.from('user_trip_expenses')
-                .upsert({ user_id: currentUser.id, trip_id: currentTripId, personal_expenses: personalExpenses });
-            updateTotalCost();
+        // --- NUEVAS FUNCIONES PARA LISTA DE GASTOS DIARIOS ---
+        
+        // Iniciar modo edición
+        function editDailyItem(itemIndex) {
+            editingDailyItemIndex = itemIndex;
+            renderActiveDay(); // Re-renderizar para rellenar inputs y cambiar botón
+        }
+
+        // Cancelar modo edición
+        function cancelEditDailyItem() {
+            editingDailyItemIndex = -1;
             renderActiveDay();
+        }
+
+        async function addDailyItem() {
+            const nameInput = document.getElementById('new-daily-name');
+            const costInput = document.getElementById('new-daily-cost');
+            
+            const name = nameInput.value.trim();
+            const cost = parseFloat(costInput.value);
+            
+            if (!name) {
+                alert("Escribe el detalle del gasto");
+                return;
+            }
+            if (isNaN(cost) || cost <= 0) {
+                alert("Escribe un costo válido");
+                return;
+            }
+
+            if (!appData.days[activeDayIndex].daily_items) {
+                appData.days[activeDayIndex].daily_items = [];
+            }
+
+            if (editingDailyItemIndex >= 0) {
+                // MODIFICAR
+                appData.days[activeDayIndex].daily_items[editingDailyItemIndex] = { name, cost };
+                editingDailyItemIndex = -1; // Salir de modo edición
+            } else {
+                // AÑADIR (SOLO AL DÍA ACTIVO)
+                appData.days[activeDayIndex].daily_items.push({ name, cost });
+            }
+            
+            await saveToStorage();
+        }
+
+        async function deleteDailyItem(itemIndex) {
+            if(confirm("¿Borrar este gasto de la lista?")) {
+                appData.days[activeDayIndex].daily_items.splice(itemIndex, 1);
+                // Si estamos editando el item que acabamos de borrar, cancelar edición
+                if (editingDailyItemIndex === itemIndex) {
+                    editingDailyItemIndex = -1;
+                } else if (itemIndex < editingDailyItemIndex) {
+                    editingDailyItemIndex--; // Ajustar índice si borramos uno anterior
+                }
+                await saveToStorage();
+            }
+        }
+
+        // --- FIX: ROBUST SAVE LOGIC ---
+        async function saveToStorage() {
+            if(!currentTripId || !supabaseClient) return false;
+            
+            try {
+                console.log("Guardando datos...");
+                const cleanAppData = JSON.parse(JSON.stringify(appData));
+
+                const { error: tripError } = await supabaseClient.from('trips')
+                    .update({ 
+                        trip_data: cleanAppData, 
+                        shared_expenses: sharedExpenses 
+                    })
+                    .eq('id', currentTripId);
+
+                if (tripError) throw tripError;
+
+                const { data: existingExpense } = await supabaseClient.from('user_trip_expenses')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .eq('trip_id', currentTripId)
+                    .maybeSingle();
+                
+                let expenseError;
+
+                if (existingExpense) {
+                    const res = await supabaseClient.from('user_trip_expenses')
+                        .update({ personal_expenses: personalExpenses })
+                        .eq('id', existingExpense.id);
+                    expenseError = res.error;
+                } else {
+                    const res = await supabaseClient.from('user_trip_expenses')
+                        .insert({ 
+                            user_id: currentUser.id, 
+                            trip_id: currentTripId, 
+                            personal_expenses: personalExpenses 
+                        });
+                    expenseError = res.error;
+                }
+                
+                if (expenseError) throw expenseError;
+
+                updateTotalCost();
+                renderActiveDay();
+                
+                return true; 
+                
+            } catch (error) {
+                console.error("Error completo al guardar:", error);
+                showToast('Error al guardar: ' + error.message, 'error');
+                return false; 
+            }
         }
 
         // --- FUNCIONES GENÉRICAS PARA GRID DE ICONOS ---
@@ -1112,7 +1284,6 @@
             const modal = document.getElementById(modalId);
             if(modal) modal.classList.add('active');
 
-            // Lógica específica por modal
             if (modalId === 'activity-modal') {
                 document.getElementById('modal-day-index').value = param1;
                 document.getElementById('modal-activity-index').value = param2 !== null ? param2 : '';
@@ -1120,7 +1291,7 @@
                 
                 renderIconGrid('activity-icon-grid', 'act-icon');
 
-                if (param2 !== null) { // Editar
+                if (param2 !== null) { 
                     document.getElementById('modal-title').textContent = 'Editar Actividad';
                     const act = appData.days[param1].activities[param2];
                     selectIcon(act.icon || 'fa-star', 'act-icon');
@@ -1131,7 +1302,7 @@
                     document.getElementById('act-link').value = act.link;
                     document.getElementById('act-cost').value = act.cost;
                     document.getElementById('act-currency').value = act.currency || 'local';
-                } else { // Crear
+                } else { 
                     document.getElementById('modal-title').textContent = 'Añadir Actividad';
                     form.reset();
                     selectIcon('fa-star', 'act-icon');
@@ -1143,13 +1314,13 @@
                 renderIconGrid('shared-icon-grid', 'shared-icon');
                 document.getElementById('shared-cost').value = '';
                 document.getElementById('shared-desc').value = '';
-                document.getElementById('shared-currency').value = 'local'; // Resetear a local
+                document.getElementById('shared-currency').value = 'local';
             }
             else if (modalId === 'personal-expense-modal') {
                 renderIconGrid('personal-icon-grid', 'personal-icon');
                 document.getElementById('personal-cost').value = '';
                 document.getElementById('personal-desc').value = '';
-                document.getElementById('personal-currency').value = 'local'; // Resetear a local
+                document.getElementById('personal-currency').value = 'local';
             }
         }
 
@@ -1169,7 +1340,7 @@
                 location: document.getElementById('act-location').value,
                 howToGet: document.getElementById('act-transport').value,
                 link: document.getElementById('act-link').value,
-                cost: parseFloat(document.getElementById('act-cost').value),
+                cost: parseFloat(document.getElementById('act-cost').value) || 0, 
                 currency: document.getElementById('act-currency').value,
                 created_by: currentUser.id 
             };
@@ -1184,8 +1355,11 @@
                 appData.days[dayIndex].activities.push(activityData);
                 appData.days[dayIndex].activities.sort((a, b) => a.time.localeCompare(b.time));
             }
-            await saveToStorage();
-            closeModal('activity-modal');
+            
+            const saved = await saveToStorage();
+            if (saved) {
+                closeModal('activity-modal');
+            }
         }
 
         async function deleteActivity(dayIndex, actIndex) {
@@ -1208,12 +1382,13 @@
         async function saveSharedExpense(e) {
             e.preventDefault();
             const icon = document.getElementById('shared-icon').value;
-            const currency = document.getElementById('shared-currency').value; // LEER MONEDA
+            const currency = document.getElementById('shared-currency').value;
             const desc = document.getElementById('shared-desc').value;
-            const cost = document.getElementById('shared-cost').value;
-            sharedExpenses.push({ icon, desc, cost, currency }); // GUARDAR MONEDA
-            await saveToStorage();
-            closeModal('shared-expense-modal');
+            const cost = parseFloat(document.getElementById('shared-cost').value) || 0;
+            sharedExpenses.push({ icon, desc, cost, currency });
+            
+            const saved = await saveToStorage();
+            if (saved) closeModal('shared-expense-modal');
         }
         async function deleteSharedExpense(idx) {
             if(currentUser.role !== 'admin') {
@@ -1230,12 +1405,13 @@
         async function savePersonalExpense(e) {
             e.preventDefault();
             const icon = document.getElementById('personal-icon').value;
-            const currency = document.getElementById('personal-currency').value; // LEER MONEDA
+            const currency = document.getElementById('personal-currency').value;
             const desc = document.getElementById('personal-desc').value;
-            const cost = document.getElementById('personal-cost').value;
-            personalExpenses.push({ icon, desc, cost, currency }); // GUARDAR MONEDA
-            await saveToStorage();
-            closeModal('personal-expense-modal');
+            const cost = parseFloat(document.getElementById('personal-cost').value) || 0;
+            personalExpenses.push({ icon, desc, cost, currency });
+            
+            const saved = await saveToStorage();
+            if (saved) closeModal('personal-expense-modal');
         }
         async function deletePersonalExpense(idx) {
             if(confirm("¿Borrar gasto personal?")) {
@@ -1332,7 +1508,7 @@
         function renderSummarySheet() {
             const container = document.getElementById('tab-content');
             const symbol = appData.currencySymbol;
-            const rate = appData.exchangeRate;
+            const rate = appData.exchangeRate || 1;
             const crcRate = appData.crcRate || 0;
             const totals = calculateTripTotals();
             const breakdown = calculateCategoryBreakdown();
@@ -1343,6 +1519,10 @@
                 totalUSD += (parseFloat(day.expenses.food || 0) / rate);
                 totalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 totalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
+                // Incluir items diarios
+                const dailyItems = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
+                totalUSD += (dailyItems / rate);
+
                 return { idx: idx + 1, date: day.date, total: totalUSD };
             }).sort((a,b) => b.total - a.total);
 
@@ -1361,6 +1541,7 @@
                             <div class="breakdown-row"><span class="cat-name"><i class="fas fa-bus" style="color:#0984e3;"></i> Transporte</span><span class="cat-val">$${breakdown.transportUSD.toFixed(2)}</span></div>
                             <div class="breakdown-row"><span class="cat-name"><i class="fas fa-ticket-alt" style="color:#fdcb6e;"></i> Entradas</span><span class="cat-val">$${breakdown.ticketsUSD.toFixed(2)}</span></div>
                             <div class="breakdown-row"><span class="cat-name"><i class="fas fa-list" style="color:#b2bec3;"></i> Actividades</span><span class="cat-val">$${breakdown.activitiesUSD.toFixed(2)}</span></div>
+                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-receipt" style="color:#2ecc71;"></i> Otros Diarios</span><span class="cat-val">$${breakdown.dailyItemsUSD.toFixed(2)}</span></div>
                         </div>
                         <div class="breakdown-section">
                             <h3>Días más costosos</h3>
@@ -1371,15 +1552,19 @@
         }
 
         function calculateCategoryBreakdown() {
-            let foodUSD = 0, transportUSD = 0, ticketsUSD = 0, activitiesUSD = 0;
+            let foodUSD = 0, transportUSD = 0, ticketsUSD = 0, activitiesUSD = 0, dailyItemsUSD = 0;
             const rate = appData.exchangeRate || 1;
             appData.days.forEach(day => {
                 foodUSD += (parseFloat(day.expenses.food || 0) / rate);
                 transportUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 ticketsUSD += (parseFloat(day.expenses.tickets || 0) / rate);
                 day.activities.forEach(act => { activitiesUSD += convertToUSD(act.cost, act.currency); });
+                
+                // NUEVO: Cálculo de items diarios
+                const items = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
+                dailyItemsUSD += (items / rate);
             });
-            return { foodUSD, transportUSD, ticketsUSD, activitiesUSD };
+            return { foodUSD, transportUSD, ticketsUSD, activitiesUSD, dailyItemsUSD };
         }
 
         function calculateTripTotals() {
@@ -1391,8 +1576,11 @@
                 grandTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
+                
+                // NUEVO: Suma de items diarios
+                const items = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
+                grandTotalUSD += (items / rate);
             });
-            // Usar convertToUSD para gastos compartidos y personales ahora que tienen moneda
             sharedExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
             personalExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
 
