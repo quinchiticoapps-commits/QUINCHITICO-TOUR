@@ -166,6 +166,37 @@
         .bt-label { display: block; font-size: 0.9rem; color: var(--gray); text-transform: uppercase; margin-bottom: 0.5rem; }
         .bt-value { display: block; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
 
+        /* --- ESTILOS PARA EL RESUMEN (CORREGIDO) --- */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+        }
+        .breakdown-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .breakdown-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            border-bottom: 2px solid #dfe6e9;
+            padding-bottom: 0.5rem;
+        }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        .breakdown-row:last-child { border-bottom: none; }
+        .cat-name { color: var(--dark); font-weight: 500; }
+        .cat-val { font-weight: bold; color: var(--secondary); }
+
         /* --- FLOATING BAR --- */
         .floating-summary { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--dark); color: white; padding: 0.8rem 2rem; display: flex; justify-content: center; align-items: center; gap: 0.3rem; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); z-index: 100; }
         .floating-summary .total-amount { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
@@ -416,7 +447,7 @@
     <div class="modal-overlay" id="shared-expense-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3>Gasto Compartido (Día ${activeDayIndex + 1})</h3>
+                <h3 id="shared-expense-title">Gasto Compartido</h3>
                 <button class="close-modal" onclick="closeModal('shared-expense-modal')">&times;</button>
             </div>
             <form onsubmit="saveSharedExpense(event)">
@@ -462,7 +493,7 @@
     <div class="modal-overlay" id="personal-expense-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3>Mi Gasto Personal</h3>
+                <h3 id="personal-expense-title">Mi Gasto Personal</h3>
                 <button class="close-modal" onclick="closeModal('personal-expense-modal')">&times;</button>
             </div>
             <form onsubmit="savePersonalExpense(event)">
@@ -475,7 +506,7 @@
 
                 <div class="form-group"><label>Descripción (Opcional)</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Compras"></div>
                 
-                <!-- NUEVO: SELECTOR DE MONEDA Y COSTO -->
+                <!-- SELECTOR DE MONEDA Y COSTO -->
                 <div class="form-row">
                     <div class="form-group">
                         <label>Moneda</label>
@@ -602,6 +633,8 @@
         
         // Variable para controlar la edición de gastos diarios
         let editingDailyItemIndex = -1;
+        // Variable para controlar la edición de gastos personales
+        let editingPersonalExpenseIndex = -1;
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -912,7 +945,6 @@
             if (activeDayIndex === appData.days.length) { renderSummarySheet(); return; }
 
             const container = document.getElementById('tab-content');
-            // IMPORTANTE: Aquí seleccionamos estrictamente el día activo
             const day = appData.days[activeDayIndex];
             
             const symbol = appData.currencySymbol;
@@ -921,26 +953,19 @@
 
             // --- CÁLCULO DE TOTALES DEL DÍA ---
             let dayTotalUSD = 0;
-            
-            // Actividades
             day.activities.forEach(act => { dayTotalUSD += convertToUSD(act.cost, act.currency); });
-            
-            // Gastos rápidos (Food, Transport, Tickets)
             dayTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
             dayTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
             dayTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
-
-            // Items de la lista diaria (SOLO ESTE DÍA)
-            const dailyItemsTotal = (day.daily_items || []).reduce((acc, item) => acc + (parseFloat(item.cost) || 0), 0);
-            dayTotalUSD += (dailyItemsTotal / rate);
-
-            // --- GASTOS COMPARTIDOS DEL DÍA ACTIVO ---
-            // Filtramos para mostrar solo los de este día (o los viejos sin día definido)
-            const daySharedExpenses = sharedExpenses.filter(exp => exp.dayIndex === undefined || exp.dayIndex === activeDayIndex);
             
-            daySharedExpenses.forEach(exp => {
-                dayTotalUSD += convertToUSD(exp.cost, exp.currency);
-            });
+            // ACTUALIZADO: Cálculo de daily_items considerando su moneda individual
+            const dailyItemsTotalUSD = (day.daily_items || []).reduce((acc, item) => {
+                return acc + convertToUSD(item.cost, item.currency);
+            }, 0);
+            dayTotalUSD += dailyItemsTotalUSD;
+
+            const daySharedExpenses = sharedExpenses.filter(exp => exp.dayIndex === undefined || exp.dayIndex === activeDayIndex);
+            daySharedExpenses.forEach(exp => { dayTotalUSD += convertToUSD(exp.cost, exp.currency); });
 
             const dayTotalLocal = dayTotalUSD * rate;
             const dayTotalCRC = dayTotalUSD * crcRate;
@@ -952,25 +977,17 @@
 
             // --- RENDERIZADO DE GASTOS COMPARTIDOS (FILTRADO POR DÍA) ---
             let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Día ${activeDayIndex+1})</h4>`;
-            
-            // Mostramos el total de ESTE DÍA, no el total del viaje
             const daySharedTotalUSD = daySharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
             sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total del Día: $${daySharedTotalUSD.toFixed(2)} USD</div>`;
             
-            // Iteramos SOLO los que aplican a este día para mostrar la lista
             sharedExpenses.forEach((exp, globalIdx) => {
-                // Verificamos si pertenece al día actual (o si es un gasto viejo global)
                 if (exp.dayIndex !== undefined && exp.dayIndex !== activeDayIndex) return;
-
                 const iconClass = getIconColorClass(exp.icon);
                 const displayIcon = exp.icon || 'fa-receipt';
                 const desc = exp.desc || 'Gasto';
                 const currSym = getCurrencySymbol(exp.currency);
-                
-                // Datos nuevos
                 const loc = exp.location ? `<div class="activity-meta" style="font-size:0.8rem; margin-top:4px;"><i class="fas fa-map-marker-alt" style="color:var(--danger)"></i> ${exp.location}</div>` : '';
                 const link = exp.link ? `<div class="activity-meta" style="font-size:0.8rem;"><i class="fas fa-globe" style="color:var(--primary)"></i> <a href="${exp.link}" target="_blank" style="color:var(--secondary);">Sitio Web</a></div>` : '';
-                
                 const delBtn = (currentUser.role === 'admin') ? 
                     `<i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteSharedExpense(${globalIdx})"></i>` : '';
                 
@@ -1004,20 +1021,33 @@
                 const desc = exp.desc || 'Gasto';
                 const currSym = getCurrencySymbol(exp.currency);
 
-                personalHTML += `<div class="expense-row-list"><span><i class="fas ${displayIcon} ${iconClass}"></i> ${desc} <i class="fas fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="deletePersonalExpense(${idx})"></i></span><span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span></div>`;
+                // ACTUALIZADO: Se agregó botón Editar (lápiz)
+                personalHTML += `
+                    <div class="expense-row-list">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span>
+                            <i class="fas fa-pen daily-expense-edit" style="cursor:pointer;" onclick="editPersonalExpense(${idx})" title="Editar"></i>
+                            <i class="fas fa-trash daily-expense-delete" style="color:red; cursor:pointer;" onclick="deletePersonalExpense(${idx})" title="Eliminar"></i>
+                        </div>
+                    </div>`;
             });
             personalHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:5px;" onclick="openModal('personal-expense-modal')">+ Gasto Personal</button>`;
 
-            // --- NUEVO: RENDERIZADO DE LISTA DE GASTOS DIARIOS (SOLO DEL DÍA ACTIVO) ---
+            // --- NUEVO: RENDERIZADO DE LISTA DE GASTOS DIARIOS ---
             const items = day.daily_items || [];
             let dailyItemsListHTML = '<div class="daily-expense-list">';
             if (items.length > 0) {
                 items.forEach((item, idx) => {
+                    // Usamos el símbolo de la moneda del ítem
+                    const itemSymbol = getCurrencySymbol(item.currency);
                     dailyItemsListHTML += `
                         <div class="daily-expense-list-item">
                             <span class="daily-expense-name">${item.name}</span>
                             <div style="display:flex; align-items:center;">
-                                <span class="daily-expense-cost">${symbol}${parseFloat(item.cost).toFixed(2)}</span>
+                                <span class="daily-expense-cost">${itemSymbol}${parseFloat(item.cost).toFixed(2)}</span>
                                 <div class="daily-expense-actions">
                                     <i class="fas fa-pen daily-expense-edit" onclick="editDailyItem(${idx})" title="Editar"></i>
                                     <i class="fas fa-trash daily-expense-delete" onclick="deleteDailyItem(${idx})" title="Eliminar"></i>
@@ -1031,14 +1061,12 @@
             }
             dailyItemsListHTML += '</div>';
 
-            // GESTIÓN DEL BOTÓN AÑADIR/MODIFICAR
             const isEditing = editingDailyItemIndex >= 0;
             const btnText = isEditing ? "Guardar Cambios" : "Añadir";
             const inputNameVal = isEditing ? day.daily_items[editingDailyItemIndex].name : "";
             const inputCostVal = isEditing ? day.daily_items[editingDailyItemIndex].cost : "";
-            
-            // Si estamos cambiando de día y no editando, limpiamos los inputs visualmente
-            // (Esto se maneja re-asignando los valores en el HTML generado)
+            // NUEVO: Recuperar la moneda si está editando
+            const inputCurrencyVal = isEditing ? (day.daily_items[editingDailyItemIndex].currency || 'local') : 'local';
 
             container.innerHTML = `
                 <div class="day-total-header">
@@ -1056,14 +1084,20 @@
                 <ul class="activity-list">${renderActivitiesListHTML(day, activeDayIndex, symbol, rate, crcRate)}</ul>
                 
                 <div class="daily-expenses">
-                    <div class="expense-title"><i class="fas fa-list-alt"></i> Gastos Diarios (${symbol})</div>
-                    
-                    <!-- NUEVA LISTA DETALLADA -->
+                    <div class="expense-title"><i class="fas fa-list-alt"></i> Gastos Diarios</div>
                     ${dailyItemsListHTML}
                     
-                    <div style="display:flex; gap:5px; margin-bottom:15px; border-top:1px dashed #ccc; padding-top:10px;">
-                        <input type="text" id="new-daily-name" placeholder="Detalle (ej: Almuerzo)" value="${inputNameVal}" style="flex:2;">
-                        <input type="number" id="new-daily-cost" placeholder="Costo" value="${inputCostVal}" style="flex:1;">
+                    <div style="display:flex; gap:5px; margin-bottom:15px; border-top:1px dashed #ccc; padding-top:10px; flex-wrap:wrap; align-items:center;">
+                        <input type="text" id="new-daily-name" placeholder="Detalle (ej: Almuerzo)" value="${inputNameVal}" style="flex:2; min-width:120px;">
+                        <input type="number" id="new-daily-cost" placeholder="Costo" value="${inputCostVal}" style="flex:1; min-width:80px;">
+                        
+                        <!-- NUEVO: SELECTOR DE MONEDA PARA GASTOS DIARIOS -->
+                        <select id="new-daily-currency" style="flex:0.8; min-width:90px; padding:0.7rem; border:2px solid #dfe6e9; border-radius:8px;">
+                            <option value="local" ${inputCurrencyVal === 'local' ? 'selected' : ''}>Local</option>
+                            <option value="usd" ${inputCurrencyVal === 'usd' ? 'selected' : ''}>USD</option>
+                            <option value="crc" ${inputCurrencyVal === 'crc' ? 'selected' : ''}>CRC</option>
+                        </select>
+
                         <button class="btn-primary tight" onclick="addDailyItem()">${btnText}</button>
                         ${isEditing ? `<button class="btn-secondary tight" style="margin-top:0;" onclick="cancelEditDailyItem()">Cancelar</button>` : ''}
                     </div>
@@ -1082,7 +1116,6 @@
             if (day.activities.length === 0) return `<li style="text-align:center; color:var(--gray); padding:2rem; border:1px dashed #ccc; border-radius:8px;">Sin actividades planeadas.</li>`;
             return day.activities.map((act, actIndex) => {
                 let iconClass = getIconColorClass(act.icon);
-
                 const iconToDisplay = act.icon || 'fa-star';
                 const costVal = parseFloat(act.cost) || 0;
                 const currCode = act.currency || 'local'; 
@@ -1163,15 +1196,13 @@
             saveToStorage();
         }
 
-        // --- NUEVAS FUNCIONES PARA LISTA DE GASTOS DIARIOS ---
+        // --- FUNCIONES PARA LISTA DE GASTOS DIARIOS ---
         
-        // Iniciar modo edición
         function editDailyItem(itemIndex) {
             editingDailyItemIndex = itemIndex;
-            renderActiveDay(); // Re-renderizar para rellenar inputs y cambiar botón
+            renderActiveDay();
         }
 
-        // Cancelar modo edición
         function cancelEditDailyItem() {
             editingDailyItemIndex = -1;
             renderActiveDay();
@@ -1180,9 +1211,11 @@
         async function addDailyItem() {
             const nameInput = document.getElementById('new-daily-name');
             const costInput = document.getElementById('new-daily-cost');
+            const currencyInput = document.getElementById('new-daily-currency'); // NUEVO
             
             const name = nameInput.value.trim();
             const cost = parseFloat(costInput.value);
+            const currency = currencyInput ? currencyInput.value : 'local'; // NUEVO
             
             if (!name) {
                 alert("Escribe el detalle del gasto");
@@ -1198,12 +1231,10 @@
             }
 
             if (editingDailyItemIndex >= 0) {
-                // MODIFICAR
-                appData.days[activeDayIndex].daily_items[editingDailyItemIndex] = { name, cost };
-                editingDailyItemIndex = -1; // Salir de modo edición
+                appData.days[activeDayIndex].daily_items[editingDailyItemIndex] = { name, cost, currency };
+                editingDailyItemIndex = -1;
             } else {
-                // AÑADIR (SOLO AL DÍA ACTIVO)
-                appData.days[activeDayIndex].daily_items.push({ name, cost });
+                appData.days[activeDayIndex].daily_items.push({ name, cost, currency });
             }
             
             await saveToStorage();
@@ -1212,12 +1243,68 @@
         async function deleteDailyItem(itemIndex) {
             if(confirm("¿Borrar este gasto de la lista?")) {
                 appData.days[activeDayIndex].daily_items.splice(itemIndex, 1);
-                // Si estamos editando el item que acabamos de borrar, cancelar edición
                 if (editingDailyItemIndex === itemIndex) {
                     editingDailyItemIndex = -1;
                 } else if (itemIndex < editingDailyItemIndex) {
-                    editingDailyItemIndex--; // Ajustar índice si borramos uno anterior
+                    editingDailyItemIndex--;
                 }
+                await saveToStorage();
+            }
+        }
+
+        // --- FUNCIONES PARA GASTOS PERSONALES (NUEVO: EDITAR) ---
+
+        function editPersonalExpense(idx) {
+            editingPersonalExpenseIndex = idx;
+            const exp = personalExpenses[idx];
+            
+            // Rellenar campos
+            document.getElementById('personal-desc').value = exp.desc || '';
+            document.getElementById('personal-cost').value = exp.cost;
+            document.getElementById('personal-currency').value = exp.currency || 'local';
+            
+            // Seleccionar icono
+            renderIconGrid('personal-icon-grid', 'personal-icon', exp.icon || 'fa-star');
+            
+            // Cambiar título del modal
+            document.getElementById('personal-expense-title').textContent = 'Editar Gasto Personal';
+            
+            // Abrir modal
+            openModal('personal-expense-modal');
+        }
+
+        async function savePersonalExpense(e) {
+            e.preventDefault();
+            const icon = document.getElementById('personal-icon').value;
+            const currency = document.getElementById('personal-currency').value;
+            const desc = document.getElementById('personal-desc').value;
+            const cost = parseFloat(document.getElementById('personal-cost').value) || 0;
+            
+            const expenseData = { icon, desc, cost, currency };
+
+            if (editingPersonalExpenseIndex >= 0) {
+                // Actualizar existente
+                personalExpenses[editingPersonalExpenseIndex] = expenseData;
+                editingPersonalExpenseIndex = -1; // Resetear
+            } else {
+                // Crear nuevo
+                personalExpenses.push(expenseData);
+            }
+            
+            // Restaurar título del modal para futuros usos
+            document.getElementById('personal-expense-title').textContent = 'Mi Gasto Personal';
+            
+            const saved = await saveToStorage();
+            if (saved) closeModal('personal-expense-modal');
+        }
+
+        async function deletePersonalExpense(idx) {
+            if(confirm("¿Borrar gasto personal?")) {
+                personalExpenses.splice(idx, 1);
+                // Si estábamos editando este item, cancelar edición
+                if(editingPersonalExpenseIndex === idx) editingPersonalExpenseIndex = -1;
+                else if(idx < editingPersonalExpenseIndex) editingPersonalExpenseIndex--;
+                
                 await saveToStorage();
             }
         }
@@ -1342,7 +1429,6 @@
                 }
             } 
             else if (modalId === 'shared-expense-modal') {
-                // Actualizamos el título del modal para reflejar el día activo
                 const headerTitle = document.querySelector('#shared-expense-modal .modal-header h3');
                 if(headerTitle) headerTitle.textContent = `Gasto Compartido (Día ${activeDayIndex + 1})`;
 
@@ -1350,20 +1436,32 @@
                 document.getElementById('shared-cost').value = '';
                 document.getElementById('shared-desc').value = '';
                 document.getElementById('shared-currency').value = 'local';
-                // Limpiar campos
                 document.getElementById('shared-location').value = '';
                 document.getElementById('shared-link').value = '';
             }
             else if (modalId === 'personal-expense-modal') {
-                renderIconGrid('personal-icon-grid', 'personal-icon');
-                document.getElementById('personal-cost').value = '';
-                document.getElementById('personal-desc').value = '';
-                document.getElementById('personal-currency').value = 'local';
+                // Solo reiniciar si NO estamos en modo edición (la edición llama a openModal pero llenará los datos después)
+                // Para simplificar, asumimos que si abrimos el modal normalmente es para nuevo gasto.
+                // La función editPersonalExpense maneja la preparación de datos para editar.
+                
+                // Si el índice es -1, es nuevo
+                if(editingPersonalExpenseIndex === -1) {
+                    renderIconGrid('personal-icon-grid', 'personal-icon');
+                    document.getElementById('personal-cost').value = '';
+                    document.getElementById('personal-desc').value = '';
+                    document.getElementById('personal-currency').value = 'local';
+                    document.getElementById('personal-expense-title').textContent = 'Mi Gasto Personal';
+                }
             }
         }
 
         function closeModal(id) { 
             document.getElementById(id).classList.remove('active'); 
+            // Resetear estados de edición si se cierra el modal
+            if(id === 'personal-expense-modal') editingPersonalExpenseIndex = -1;
+            if(id === 'activity-modal') {
+                // El título se resetea en openModal, pero aseguremos limpieza visual si es necesario
+            }
         }
         
         async function saveActivity(e) {
@@ -1426,7 +1524,6 @@
             const location = document.getElementById('shared-location').value;
             const link = document.getElementById('shared-link').value;
 
-            // NUEVO: Asignar al día activo
             sharedExpenses.push({ icon, desc, cost, currency, location, link, dayIndex: activeDayIndex });
             
             const saved = await saveToStorage();
@@ -1439,25 +1536,6 @@
             }
             if(confirm("¿Borrar gasto compartido?")) {
                 sharedExpenses.splice(globalIdx, 1);
-                await saveToStorage();
-            }
-        }
-
-        // --- GESTION GASTOS PERSONALES (USER) ---
-        async function savePersonalExpense(e) {
-            e.preventDefault();
-            const icon = document.getElementById('personal-icon').value;
-            const currency = document.getElementById('personal-currency').value;
-            const desc = document.getElementById('personal-desc').value;
-            const cost = parseFloat(document.getElementById('personal-cost').value) || 0;
-            personalExpenses.push({ icon, desc, cost, currency });
-            
-            const saved = await saveToStorage();
-            if (saved) closeModal('personal-expense-modal');
-        }
-        async function deletePersonalExpense(idx) {
-            if(confirm("¿Borrar gasto personal?")) {
-                personalExpenses.splice(idx, 1);
                 await saveToStorage();
             }
         }
@@ -1561,10 +1639,10 @@
                 totalUSD += (parseFloat(day.expenses.food || 0) / rate);
                 totalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 totalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
-                // Incluir items diarios
-                const dailyItems = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
-                totalUSD += (dailyItems / rate);
-                // Incluir gastos compartidos del día
+                // ACTUALIZADO: Incluir conversión de daily_items en el resumen
+                const dailyItemsUSD = (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
+                totalUSD += dailyItemsUSD;
+
                 sharedExpenses.filter(exp => exp.dayIndex === idx).forEach(exp => {
                     totalUSD += convertToUSD(exp.cost, exp.currency);
                 });
@@ -1606,9 +1684,9 @@
                 ticketsUSD += (parseFloat(day.expenses.tickets || 0) / rate);
                 day.activities.forEach(act => { activitiesUSD += convertToUSD(act.cost, act.currency); });
                 
-                // NUEVO: Cálculo de items diarios
-                const items = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
-                dailyItemsUSD += (items / rate);
+                // ACTUALIZADO: Cálculo correcto de daily_items por moneda
+                const itemsUSD = (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
+                dailyItemsUSD += itemsUSD;
             });
             return { foodUSD, transportUSD, ticketsUSD, activitiesUSD, dailyItemsUSD };
         }
@@ -1623,9 +1701,9 @@
                 grandTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
                 
-                // NUEVO: Suma de items diarios
-                const items = (day.daily_items || []).reduce((acc, i) => acc + (i.cost || 0), 0);
-                grandTotalUSD += (items / rate);
+                // ACTUALIZADO: Totales del viaje considerando moneda de cada ítem diario
+                const itemsUSD = (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
+                grandTotalUSD += itemsUSD;
             });
             sharedExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
             personalExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
