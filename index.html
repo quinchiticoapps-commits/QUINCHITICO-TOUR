@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quinchitico Tour - Gestor Pro</title>
     
     <!-- Iconos y Estilos -->
@@ -14,97 +14,139 @@
     <meta name="theme-color" content="#00cec9">
     <meta name="application-name" content="Quinchitico Tour">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%2300cec9' rx='115'/><path fill='white' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
-    <link rel="icon" type="image/svg+xml" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%2300cec9' rx='115'/><path fill='white' d='M498.4 228.5L285.2 25.3c-4.3-4.1-10.2-6.1-16.1-5.5l-224 22.4c-6.6.7-12.4 4.7-15.4 10.7L3.4 252.1c-3.8 7.5-2.7 16.6 2.7 23l193 228.7c4.4 5.2 11.1 8.1 18 7.6l256-20c6.9-.5 13.1-4.5 16.3-10.7l22.4-44.8c2.8-5.6 2.4-12.2-1-17.4L498.4 228.5z'/></svg>">
+    
+    <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #00cec9; --secondary: #0984e3; --accent: #fdcb6e;
-            --danger: #ff7675; --dark: #2d3436; --light: #f5f6fa;
-            --white: #ffffff; --gray: #b2bec3; --radius: 12px;
+            --primary: #00cec9; 
+            --primary-dark: #00b894;
+            --secondary: #0984e3; 
+            --accent: #fdcb6e;
+            --danger: #ff7675; 
+            --dark: #2d3436; 
+            --light: #f5f6fa;
+            --white: #ffffff; 
+            --gray: #b2bec3; 
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--light); color: var(--dark); padding-bottom: 100px; }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--light); 
+            color: var(--dark); 
+            padding-bottom: 100px; /* Space for floating bar */
+        }
+
+        /* --- TYPOGRAPHY & HEADER --- */
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: var(--white);
             padding: 2rem 1rem;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             position: relative;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
-        header h1 { font-size: 2rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
-        header p { font-size: 1rem; opacity: 0.9; }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); letter-spacing: -0.5px; }
+        header p { font-size: 0.95rem; opacity: 0.9; font-weight: 300; }
 
-        .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
-        .card { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 1rem; text-align: center; }
+        /* --- LAYOUT --- */
+        .container { max-width: 900px; margin: 0 auto; padding: 1rem; animation: fadeIn 0.4s ease-out; }
+        .card { background: var(--white); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 1rem; text-align: center; }
 
+        /* --- FORMS --- */
         .form-group { margin-bottom: 1rem; text-align: left; }
         .form-row { display: flex; gap: 1rem; }
         .form-row .form-group { flex: 1; }
 
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark); font-size: 0.9rem; }
+        label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: var(--dark); font-size: 0.85rem; }
         input, select, textarea {
-            width: 100%; padding: 0.7rem; border: 2px solid #dfe6e9; border-radius: 8px; font-size: 0.95rem; transition: 0.3s;
+            width: 100%; padding: 0.75rem; border: 2px solid #dfe6e9; border-radius: 8px; font-size: 0.95rem; transition: all 0.2s; background: #fff;
         }
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 206, 201, 0.1); }
 
+        /* --- BUTTONS --- */
         .btn-primary {
-            background-color: var(--secondary); color: white; border: none; padding: 0.8rem 2rem;
-            font-size: 1rem; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;
-            transition: transform 0.2s, background 0.3s; margin-top: 1rem;
+            background-color: var(--secondary); color: white; border: none; padding: 0.8rem 1.5rem;
+            font-size: 1rem; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600;
+            transition: transform 0.1s, background 0.2s; margin-top: 1rem; box-shadow: var(--shadow);
         }
-        .btn-primary:hover { background-color: #0769b5; transform: translateY(-2px); }
-        .btn-primary.tight { width: auto; padding: 0.5rem 1rem; margin-top: 0; }
+        .btn-primary:hover { background-color: #0769b5; transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(1px); }
+        
+        .btn-primary.tight { width: auto; padding: 0.5rem 1rem; margin-top: 0; font-size: 0.9rem;}
 
         .btn-secondary {
-            background-color: var(--gray); color: white; border: none; padding: 0.6rem 1.5rem;
-            font-size: 0.9rem; border-radius: 8px; cursor: pointer; margin-top: 1rem; margin-right: 10px;
+            background-color: #dfe6e9; color: var(--dark); border: none; padding: 0.6rem 1.5rem;
+            font-size: 0.9rem; border-radius: 8px; cursor: pointer; margin-top: 1rem; margin-right: 10px; font-weight: 500;
         }
-        .btn-secondary:hover { background-color: #636e72; }
+        .btn-secondary:hover { background-color: #b2bec3; }
 
-        /* Lista de Viajes */
-        .trip-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        /* --- DASHBOARD (TRIP LIST) --- */
+        .trip-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
         .trip-card {
-            background: #f8f9fa; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem;
+            background: #f8f9fa; border: 1px solid #dfe6e9; border-radius: 12px; padding: 1.2rem;
             text-align: left; cursor: pointer; transition: 0.2s; position: relative;
         }
-        .trip-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .trip-card h3 { color: var(--dark); margin-bottom: 0.5rem; }
-        .trip-card p { color: var(--gray); font-size: 0.85rem; margin-bottom: 0.2rem; }
-        .trip-card-actions { position: absolute; top: 10px; right: 10px; }
-        .btn-icon-small { background: none; border: none; color: var(--gray); cursor: pointer; padding: 5px; }
-        .btn-icon-small:hover { color: var(--danger); }
+        .trip-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+        .trip-card h3 { color: var(--dark); margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .trip-card p { color: var(--gray); font-size: 0.85rem; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 6px; }
+        .trip-card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        
+        .btn-icon-small { 
+            background: white; border: 1px solid #eee; border-radius: 50%; color: var(--gray); 
+            cursor: pointer; padding: 8px; width: 36px; height: 36px; display: flex; 
+            align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn-icon-small:hover { color: var(--primary); border-color: var(--primary); transform: scale(1.1); }
+        .btn-icon-small.delete:hover { color: var(--danger); border-color: var(--danger); }
+        .btn-icon-small.excel:hover { color: #27ae60; border-color: #27ae60; }
+        .btn-icon-small.upload:hover { color: var(--secondary); border-color: var(--secondary); }
 
-        /* --- PANEL PLANIFICADOR --- */
-        #planner-panel { display: none; animation: fadeIn 0.5s ease-in; }
+        /* --- PLANNER PANEL --- */
+        #planner-panel { display: none; padding-bottom: 80px; }
+        
         .trip-header-info {
             background: var(--white); padding: 1rem; border-radius: var(--radius);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px;
+            box-shadow: var(--shadow); margin-bottom: 1rem; display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 10px; border-left: 5px solid var(--primary);
         }
-        .trip-title { font-size: 1.3rem; color: var(--secondary); font-weight: 800; }
-        .currency-info { text-align: right; font-size: 0.85rem; }
-        .btn-back { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; cursor: pointer; margin-right: 10px; }
+        .trip-title { font-size: 1.4rem; color: var(--secondary); font-weight: 800; line-height: 1.2; }
+        .currency-info { text-align: right; font-size: 0.85rem; background: #f1f2f6; padding: 8px 12px; border-radius: 8px; }
+        .btn-back { 
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); 
+            color: white; padding: 5px 12px; border-radius: 20px; cursor: pointer; margin-right: 10px; font-size: 0.8rem;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.3); }
 
-        /* --- TABS & ACTIVITIES --- */
-        .tabs-wrapper { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; margin-top: 1rem; }
-        .tabs-nav { display: flex; background: #f1f2f6; overflow-x: auto; border-bottom: 2px solid #dfe6e9; position: sticky; top: 0; z-index: 10; }
-        .tabs-nav::-webkit-scrollbar { height: 4px; }
-        .tab-btn { padding: 1rem 1.2rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: var(--gray); white-space: nowrap; transition: 0.3s; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; min-width: 90px; }
+        /* --- TABS --- */
+        .tabs-wrapper { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-top: 1rem; }
+        .tabs-nav { display: flex; background: #f1f2f6; overflow-x: auto; border-bottom: 2px solid #dfe6e9; position: sticky; top: 0; z-index: 10; scrollbar-width: none; }
+        .tabs-nav::-webkit-scrollbar { display: none; }
+        .tab-btn { 
+            padding: 1rem 1.2rem; background: none; border: none; border-bottom: 3px solid transparent; 
+            cursor: pointer; font-weight: 600; color: var(--gray); white-space: nowrap; transition: 0.3s; 
+            font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; min-width: 90px; flex: 1; 
+        }
         .tab-btn:hover { background: #e0e0e0; color: var(--dark); }
         .tab-btn.active { color: var(--primary); background: white; border-bottom: 3px solid var(--primary); }
-        .tab-date { font-size: 0.75rem; font-weight: normal; margin-top: 2px; }
+        .tab-date { font-size: 0.7rem; font-weight: normal; margin-top: 2px; opacity: 0.8; }
 
-        /* Activity List */
+        /* --- DAY CONTENT --- */
         .day-total-header { background: #e0f7fa; border: 1px solid #b2bec3; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; overflow: hidden; }
-        .day-title-section { background: #00cec9; color: white; padding: 0.8rem 1rem; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .day-title-section { background: var(--primary); color: white; padding: 0.8rem 1rem; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
         .totals-grid { padding: 1rem; display: flex; flex-direction: column; gap: 8px; background: white; }
         .total-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
         .currency-label { font-weight: bold; color: var(--dark); min-width: 50px; }
@@ -112,145 +154,126 @@
         .val-day { font-weight: bold; color: var(--secondary); margin-right: 10px; }
         .val-trip { color: var(--gray); font-size: 0.85rem; }
 
-        .activity-list { list-style: none; margin-bottom:1.5rem; }
-        .activity-item { display: flex; flex-direction: column; padding: 1rem; border-bottom: 1px solid #f1f2f6; position: relative; transition: background 0.2s; border-radius: 8px; }
-        .activity-item:hover { background-color: #fdfdfd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        /* --- ACTIVITY LIST --- */
+        .activity-list { list-style: none; margin-bottom: 1.5rem; }
+        .activity-item { 
+            display: flex; flex-direction: column; padding: 1rem; border-bottom: 1px solid #f1f2f6; 
+            position: relative; transition: background 0.2s; border-radius: 8px; background: white;
+        }
+        .activity-item:hover { background-color: #fcfcfc; }
         .activity-top { display: flex; align-items: flex-start; gap: 1rem; }
-        .activity-time { font-weight: bold; color: var(--secondary); min-width: 60px; font-size: 0.95rem; padding-top: 2px; }
+        .activity-time { font-weight: bold; color: var(--secondary); min-width: 65px; font-size: 1rem; padding-top: 2px; text-align: center; background: #e3f2fd; border-radius: 6px; padding: 4px 0; }
         .activity-details { flex-grow: 1; }
-        .activity-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 8px; }
+        .activity-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 8px; color: var(--dark); }
         .activity-meta { font-size: 0.9rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem; }
-        .activity-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; }
-        .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px; }
+        .activity-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; justify-content: flex-end; border-top: 1px solid #f1f2f6; padding-top: 0.8rem; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; }
         .btn-edit { background: #e0f7fa; color: var(--secondary); }
+        .btn-edit:hover { background: #b2ebf2; }
         .btn-delete { background: #ffebee; color: var(--danger); }
+        .btn-delete:hover { background: #ffcdd2; }
 
-        /* --- ESTILOS GASTOS DIARIOS --- */
-        .daily-expenses { background-color: #fdfdfd; border: 1px solid #dfe6e9; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
-        .expense-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom:1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; font-weight: 700; }
+        /* --- EXPENSES --- */
+        .daily-expenses { background-color: #fdfdfd; border: 1px solid #dfe6e9; border-radius: 12px; padding: 1.5rem; margin-top: 1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.02); }
+        .expense-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;}
+        
         .expense-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; }
-        .expense-input label { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 5px; }
-
-        /* Lista Detallada de Gastos Diarios */
+        .expense-input label { font-size: 0.75rem; color: var(--gray); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 5px; }
+        
         .daily-expense-list { margin-bottom: 1.5rem; }
-        .daily-expense-list-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
-        .daily-expense-list-item:last-child { border-bottom: none; }
-        .daily-expense-name { flex-grow: 1; }
-        .daily-expense-cost { font-weight: 600; color: var(--secondary); margin-right: 15px; }
-        .daily-expense-actions { display: flex; gap: 5px; }
-        .daily-expense-edit { color: #0984e3; cursor: pointer; transition: 0.2s; }
-        .daily-expense-edit:hover { color: #00cec9; }
-        .daily-expense-delete { color: #ff7675; cursor: pointer; transition: 0.2s; }
-        .daily-expense-delete:hover { color: #d63031; }
+        .daily-expense-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+        .daily-expense-name { flex-grow: 1; font-weight: 500; }
+        .daily-expense-cost { font-weight: 700; color: var(--secondary); margin-right: 15px; }
+        .daily-expense-actions { display: flex; gap: 8px; }
+        .daily-expense-edit { color: #0984e3; cursor: pointer; transition: 0.2s; padding: 4px; }
+        .daily-expense-delete { color: #ff7675; cursor: pointer; transition: 0.2s; padding: 4px; }
 
-        /* --- COLORES DE ICONOS --- */
+        /* --- SHARED/PERSONAL BOXES --- */
+        .shared-expenses-box { border: 1px solid #fdcb6e; background: #fffbf0; padding: 1.2rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1.2rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        .expense-row-list { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; border-radius: 6px; transition: background 0.2s;}
+        .expense-row-list:hover { background: rgba(0,0,0,0.02); }
+        .expense-details-col { display: flex; flex-direction: column; gap: 4px; }
+
+        /* --- SUMMARY --- */
+        .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 1.5rem; text-align: center; }
+        .summary-title { font-size: 1.5rem; color: var(--secondary); margin-bottom: 1.5rem; font-weight: 800; text-transform: uppercase; }
+        .big-totals { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; }
+        .big-total-item { flex: 1; min-width: 150px; padding: 1.5rem; background: #f8f9fa; border-radius: 12px; border: 1px solid #eee; box-shadow: var(--shadow); }
+        .bt-label { display: block; font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .bt-value { display: block; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; text-align: left; }
+        .breakdown-section { background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #eee; }
+        .breakdown-section h3 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--dark); border-bottom: 2px solid #dfe6e9; padding-bottom: 0.5rem; }
+        .breakdown-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        .breakdown-row:last-child { border-bottom: none; }
+        .cat-name { color: var(--dark); font-weight: 500; }
+        .cat-val { font-weight: bold; color: var(--secondary); }
+
+        /* --- ICON COLORS --- */
         .act-icon-food { color: #e17055; }
         .act-icon-transport { color: #0984e3; }
         .act-icon-lodging { color: #6c5ce7; }
         .act-icon-nature { color: #00b894; }
         .act-icon-culture { color: #fdcb6e; }
         .act-icon-party { color: #e84393; }
-
-        /* SECCIONES NUEVAS (GASTOS) */
-        .shared-expenses-box { border: 1px solid #fdcb6e; background: #fffbf0; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .expense-row-list { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; }
-        .expense-row-list:hover { background: rgba(0,0,0,0.02); }
-        .expense-details-col { display: flex; flex-direction: column; gap: 2px; }
-
-        /* Summary Styles */
-        .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
-        .summary-title { font-size: 1.5rem; color: var(--secondary); margin-bottom: 1.5rem; font-weight: bold; }
-        .big-totals { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; }
-        .big-total-item { flex: 1; min-width: 150px; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
-        .bt-label { display: block; font-size: 0.9rem; color: var(--gray); text-transform: uppercase; margin-bottom: 0.5rem; }
-        .bt-value { display: block; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
-
-        /* --- ESTILOS PARA EL RESUMEN (CORREGIDO) --- */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            text-align: left;
-        }
-        .breakdown-section {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        .breakdown-section h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
-            border-bottom: 2px solid #dfe6e9;
-            padding-bottom: 0.5rem;
-        }
-        .breakdown-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.6rem 0;
-            border-bottom: 1px solid #eee;
-            font-size: 0.95rem;
-        }
-        .breakdown-row:last-child { border-bottom: none; }
-        .cat-name { color: var(--dark); font-weight: 500; }
-        .cat-val { font-weight: bold; color: var(--secondary); }
+        .act-icon-shopping { color: #e84393; }
+        .act-icon-general { color: #636e72; }
 
         /* --- FLOATING BAR --- */
-        .floating-summary { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--dark); color: white; padding: 0.8rem 2rem; display: flex; justify-content: center; align-items: center; gap: 0.3rem; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); z-index: 100; }
-        .floating-summary .total-amount { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+        .floating-summary { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--dark); 
+            color: white; padding: 1rem 2rem; display: flex; justify-content: center; 
+            align-items: center; gap: 1rem; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); 
+            z-index: 100; backdrop-filter: blur(5px);
+        }
+        .floating-summary .total-amount { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
 
         /* --- MODALS --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(3px); }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal { background: white; padding: 2rem; border-radius: var(--radius); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative; transform: translateY(20px); transition: 0.3s; }
+        .modal { background: white; padding: 2rem; border-radius: var(--radius); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative; transform: translateY(20px); transition: 0.3s; box-shadow: var(--shadow-hover); }
         .modal-overlay.active .modal { transform: translateY(0); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom:1.5rem; }
-        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
+        .close-modal:hover { background: #f1f2f6; color: var(--danger); }
 
-        /* --- ESTILO GRID DE ICONOS --- */
-        .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 5px; }
+        /* --- ICON GRID --- */
+        .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 10px; }
         .icon-btn {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; cursor: pointer;
+            padding: 12px 5px; border: 2px solid #dfe6e9; border-radius: 10px; cursor: pointer;
             background: white; transition: all 0.2s;
         }
-        .icon-btn i { font-size: 1.5rem; margin-bottom: 5px; color: var(--gray); }
-        .icon-btn span { font-size: 0.7rem; color: var(--gray); text-align: center; line-height: 1.2; }
-        
-        /* Estado seleccionado */
-        .icon-btn.selected { border-color: var(--primary); background-color: #e0fffa; }
-        .icon-btn.selected i, .icon-btn.selected span { color: var(--secondary); font-weight: bold; }
-
-        /* Colores hover específicos para dar feedback visual */
+        .icon-btn i { font-size: 1.4rem; margin-bottom: 5px; color: var(--gray); transition: 0.2s; }
+        .icon-btn span { font-size: 0.65rem; color: var(--gray); text-align: center; line-height: 1.2; }
+        .icon-btn.selected { border-color: var(--primary); background-color: #e0fffa; transform: scale(1.05); }
+        .icon-btn.selected i, .icon-btn.selected span { color: var(--primary); font-weight: bold; }
         .icon-btn:hover { border-color: var(--secondary); }
-        .icon-btn[data-cat="food"]:hover i { color: #e17055; }
-        .icon-btn[data-cat="transport"]:hover i { color: #0984e3; }
-        .icon-btn[data-cat="lodging"]:hover i { color: #6c5ce7; }
-        .icon-btn[data-cat="nature"]:hover i { color: #00b894; }
-        .icon-btn[data-cat="culture"]:hover i { color: #fdcb6e; }
-        .icon-btn[data-cat="party"]:hover i { color: #e84393; }
 
-        /* Auth Specific */
+        /* Admin Specifics */
         .auth-container { max-width: 400px; margin: 50px auto; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; }
-        .status-dot.connected { background: #2ecc71; }
+        .status-dot.connected { background: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
         .admin-only-btn { display: none; }
         .admin-mode .admin-only-btn { display: inline-block; }
-        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .user-list-actions button { margin-left: 5px; font-size: 0.8rem; padding: 4px 8px; }
+        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; transition: 0.2s; }
+        .user-list-item:hover { background: #f9f9f9; }
 
         /* Toast */
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s; max-width: 300px; word-wrap: break-word;}
-        .toast.success { border-left: 4px solid #2ecc71; }
-        .toast.error { border-left: 4px solid #e74c3c; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #333; color: white; padding: 12px 24px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 300px; word-wrap: break-word; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; }
+        .toast.success { border-left: 4px solid #2ecc71; background: #2d3436; }
+        .toast.error { border-left: 4px solid #e74c3c; background: #2d3436; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         @media (max-width: 600px) {
             header h1 { font-size: 1.5rem; }
+            .form-row { flex-direction: column; gap: 0; }
+            .modal { padding: 1.5rem; }
+            .floating-summary { flex-direction: column; gap: 0.2rem; text-align: center; padding: 0.8rem; }
+            .floating-summary .total-amount { font-size: 1.2rem; }
         }
         .hidden { display: none !important; }
     </style>
@@ -258,38 +281,48 @@
 <body>
 
     <header>
-        <div id="connection-status-badge" style="position:absolute; top:1rem; right:1rem; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:15px; font-size:0.8rem; display:flex; align-items:center; gap:5px;">
+        <div id="connection-status-badge" style="position:absolute; top:1rem; right:1rem; background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); padding:4px 12px; border-radius:20px; font-size:0.75rem; display:flex; align-items:center; gap:6px; border:1px solid rgba(255,255,255,0.3);">
             <div class="status-dot" id="status-dot"></div> <span id="status-text">Desconectado</span>
         </div>
         <h1><i class="fas fa-plane-departure"></i> Quinchitico Tour</h1>
-        <p>Planifica y gestiona tus viajes</p>
+        <p>Gestor Profesional de Viajes</p>
     </header>
 
     <!-- 1. AUTH / LOGIN PANEL -->
     <div id="auth-panel" class="container auth-container" style="display:none;">
         <div class="card">
-            <h2 style="margin-bottom:1rem;">Iniciar Sesión</h2>
+            <h2 style="margin-bottom:1.5rem; color:var(--secondary);">Iniciar Sesión</h2>
             <form onsubmit="handleLogin(event)">
-                <div class="form-group"><input type="email" id="login-email" placeholder="Correo" required></div>
-                <div class="form-group"><input type="password" id="login-pass" placeholder="Contraseña" required></div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="login-email" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="******" required>
+                </div>
                 <button type="submit" class="btn-primary">Ingresar</button>
             </form>
-            <button class="btn-secondary" style="width:100%; margin-top:10px;" onclick="openModal('register-modal')">Crear Cuenta</button>
-            <button class="btn-secondary" style="width:100%; margin-top:5px; font-size:0.8rem;" onclick="resetConnection()">Cambiar BD</button>
+            <button class="btn-secondary" style="width:100%; margin-top:1rem; display:flex; justify-content:center; align-items:center; gap:8px;" onclick="openModal('register-modal')">
+                <i class="fas fa-user-plus"></i> Crear Cuenta
+            </button>
+            <button class="btn-secondary" style="width:100%; margin-top:0.5rem; font-size:0.75rem; background:transparent; color:var(--gray); border:none;" onclick="resetConnection()">
+                <i class="fas fa-sync"></i> Restablecer Conexión BD
+            </button>
         </div>
     </div>
 
     <!-- 2. DASHBOARD -->
     <div class="container" id="dashboard-panel" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
             <h2>Mis Viajes</h2>
-            <button id="btn-manage-users" class="btn-primary admin-only-btn" onclick="openUserModal()" style="width:auto; padding:0.5rem 1rem; font-size:0.9rem;">
+            <button id="btn-manage-users" class="btn-primary admin-only-btn tight" onclick="openUserModal()" style="display:none;">
                 <i class="fas fa-users-cog"></i> Usuarios
             </button>
         </div>
         
-        <button class="btn-primary" onclick="showNewTripForm()">
-            <i class="fas fa-plus"></i> Crear Nuevo Itinerario
+        <button class="btn-primary" onclick="showNewTripForm()" style="display:flex; justify-content:center; align-items:center; gap:10px;">
+            <i class="fas fa-plus-circle"></i> Crear Nuevo Itinerario
         </button>
 
         <div id="trips-list-container" class="trip-list">
@@ -300,43 +333,44 @@
     <!-- 3. FORMULARIO NUEVO VIAJE -->
     <div class="container" id="setup-trip-form" style="display:none;">
         <div class="card" style="text-align:left;">
-            <h2 style="margin-bottom: 1rem;">Nuevo Viaje</h2>
-            <button class="btn-secondary" onclick="backToDashboard()" style="width:100%; margin-bottom:1.5rem; background:#dfe6e9; color:#636e72;">
-                <i class="fas fa-arrow-left"></i> Atrás
+            <h2 style="margin-bottom: 1rem; color:var(--secondary);">Configurar Nuevo Viaje</h2>
+            <button class="btn-secondary tight" onclick="backToDashboard()" style="width:100%; margin-bottom:1.5rem; background:#dfe6e9; color:#636e72;">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
             </button>
             
             <form id="trip-form" onsubmit="handleCreateTrip(event)">
                 <div class="form-group">
                     <label for="destination">Destino del Viaje</label>
-                    <input type="text" id="destination" placeholder="Ej: París, Tokyo" required>
+                    <input type="text" id="destination" placeholder="Ej: París, Tokyo, Cancún" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="start-date">Inicio</label>
+                        <label for="start-date">Fecha Inicio</label>
                         <input type="date" id="start-date" required>
                     </div>
                     <div class="form-group">
-                        <label for="end-date">Fin</label>
+                        <label for="end-date">Fecha Fin</label>
                         <input type="date" id="end-date" required>
                     </div>
                 </div>
                 
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 1.5rem 0;">
                 
                 <div class="form-group">
                     <label>Seleccionar Moneda Principal</label>
                     <select id="preset-currency" onchange="fillCurrencyFromPreset()">
-                        <option value="">-- O haz clic para seleccionar --</option>
+                        <option value="">-- Personalizado --</option>
                         <option value="USD|1">🇺🇸 USD - Dólar Americano</option>
                         <option value="MXN|18">🇲🇽 MXN - Peso Mexicano</option>
                         <option value="EUR|0.95">🇪🇺 EUR - Euro</option>
                         <option value="CRC|540">🇨🇷 CRC - Colón Costarricense</option>
+                        <option value="COP|4000">🇨🇴 COP - Peso Colombiano</option>
                     </select>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="currency-symbol">Moneda (Símbolo)</label>
+                        <label for="currency-symbol">Símbolo Moneda</label>
                         <input type="text" id="currency-symbol" placeholder="$" value="$" required>
                     </div>
                     <div class="form-group">
@@ -346,15 +380,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="crc-rate">Tipo de cambio a Colones (1 USD = ? Colones)</label>
+                    <label for="crc-rate">Cambio a Colones (1 USD = ? CRC)</label>
                     <input type="number" id="crc-rate" placeholder="Ej: 540" step="1" value="540">
-                    <p style="font-size: 0.75rem; color: var(--gray); margin-top: 2px;">Necesario para calcular los totales en Colones.</p>
+                    <p style="font-size: 0.75rem; color: var(--gray); margin-top: 4px;">Requerido para el reporte en Colones.</p>
                 </div>
 
                 <div class="form-row">
                     <button type="button" class="btn-secondary" onclick="backToDashboard()" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">
-                        <i class="fas fa-save"></i> Crear y Guardar
+                        <i class="fas fa-save"></i> Crear Viaje
                     </button>
                 </div>
             </form>
@@ -364,20 +398,33 @@
     <!-- 4. PANEL PLANIFICADOR -->
     <div class="container" id="planner-panel">
         <div class="trip-header-info">
-            <div>
-                <button class="btn-back" onclick="backToDashboard()"><i class="fas fa-arrow-left"></i> Atrás</button>
+            <div style="flex:1;">
+                <button class="btn-back" onclick="backToDashboard()"><i class="fas fa-arrow-left"></i> Salir</button>
+                
                 <div class="trip-title" id="display-destination">Destino</div>
-                <small id="display-dates" style="color:var(--gray)">Fechas</small>
+                <small id="display-dates" style="color:var(--gray); font-weight:500;"></small>
             </div>
+            
             <div class="currency-info">
-                <div>
-                    <strong id="display-currency">USD</strong>
-                    <button class="btn-edit-rate" onclick="openRateModal()" title="Editar tipos de cambio" style="background:none; border:1px solid #ccc; border-radius:4px; padding:2px 6px; cursor:pointer;">
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-bottom:4px;">
+                    <strong id="display-currency" style="font-size:1.1rem;">USD</strong>
+                    <button class="btn-icon-small" style="width:24px; height:24px; padding:0; font-size:0.7rem;" onclick="openRateModal()" title="Editar tipos de cambio">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
                 </div>
-                <div>1 USD = <strong id="display-rate">1</strong> <small>(Local)</small></div>
-                <div>1 USD = <strong id="display-crc-rate">540</strong> <small>(Col)</small></div>
+                <div style="font-size:0.8rem;">1 USD = <strong id="display-rate">1</strong> <small>(Local)</small></div>
+                <div style="font-size:0.8rem;">1 USD = <strong id="display-crc-rate">540</strong> <small>(Col)</small></div>
+            </div>
+
+            <!-- EXCEL ACTIONS -->
+            <div style="display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                <input type="file" id="excel-upload" style="display:none" accept=".xlsx, .xls" onchange="uploadExcel(this)">
+                <button class="btn-icon-small excel" onclick="downloadExcel()" title="Descargar Excel">
+                    <i class="fas fa-file-download"></i>
+                </button>
+                <button class="btn-icon-small upload" onclick="document.getElementById('excel-upload').click()" title="Cargar Excel">
+                    <i class="fas fa-file-upload"></i>
+                </button>
             </div>
         </div>
 
@@ -391,34 +438,77 @@
 
     <!-- Barra Flotante -->
     <div id="summary-bar" class="floating-summary" style="display: none;">
-        <div style="font-size: 0.8rem; text-transform: uppercase;">Total del Viaje:</div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight:600; opacity:0.8;">Total Estimado:</div>
         <div class="total-amount" id="grand-total">$0.00 USD</div>
-        <div class="total-crc" id="grand-total-crc">₡0 Colones</div>
+        <div class="total-crc" id="grand-total-crc" style="font-size:0.9rem; color:var(--accent);">₡0 Colones</div>
+    </div>
+
+    <!-- MODAL EDITAR VIAJE (FECHAS) -->
+    <div class="modal-overlay" id="edit-trip-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Actualizar Fechas</h3>
+                <button class="close-modal" onclick="closeModal('edit-trip-modal')">&times;</button>
+            </div>
+            <form onsubmit="handleUpdateTrip(event)">
+                <input type="hidden" id="edit-trip-id">
+                <div class="form-group">
+                    <label>Destino</label>
+                    <input type="text" id="edit-destination" readonly style="background-color: #f1f2f6; color: #636e72; border-color:#eee;">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-start-date">Nueva Inicio</label>
+                        <input type="date" id="edit-start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-end-date">Nueva Fin</label>
+                        <input type="date" id="edit-end-date" required>
+                    </div>
+                </div>
+                <div style="background:#fff3cd; padding:10px; border-radius:8px; font-size:0.8rem; color:#856404; margin-top:10px;">
+                    <i class="fas fa-exclamation-triangle"></i> Si reduces los días, se perderá la información de los días eliminados.
+                </div>
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="closeModal('edit-trip-modal')" style="flex:1; margin-top:1.5rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1.5rem; margin-left:5px;">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- MODAL ACTIVIDAD -->
     <div class="modal-overlay" id="activity-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="modal-title">Añadir Actividad</h3>
+                <h3 id="modal-title">Actividad</h3>
                 <button class="close-modal" onclick="closeModal('activity-modal')">&times;</button>
             </div>
             <form id="activity-form" onsubmit="saveActivity(event)">
                 <input type="hidden" id="modal-day-index">
                 <input type="hidden" id="modal-activity-index">
                 
-                <!-- GRID DE ICONOS -->
                 <div class="form-group">
-                    <label>Categoría / Gasto</label>
+                    <label>Categoría</label>
                     <div class="icon-grid" id="activity-icon-grid"></div>
                     <input type="hidden" id="act-icon" value="fa-star">
                 </div>
 
-                <div class="form-group"><label>Hora</label><input type="time" id="act-time" required></div>
-                <div class="form-group"><label>Nombre de la Actividad / Lugar</label><input type="text" id="act-name" placeholder="Ej: Visita al Museo" required></div>
-                <div class="form-group"><label>Ubicación</label><input type="text" id="act-location" placeholder="Dirección o Punto de referencia"></div>
-                <div class="form-group"><label>Cómo llegar</label><input type="text" id="act-transport" placeholder="Ej: Metro Linea 3, Caminando 10min"></div>
-                <div class="form-group"><label>Sitio Web (Opcional)</label><input type="url" id="act-link" placeholder="https://..."></div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:0 0 100px;">
+                        <label>Hora</label>
+                        <input type="time" id="act-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Actividad</label>
+                        <input type="text" id="act-name" placeholder="Ej: Visita al Museo" required>
+                    </div>
+                </div>
+                
+                <div class="form-group"><label>Ubicación / Lugar</label><input type="text" id="act-location" placeholder="Dirección o Referencia"></div>
+                <div class="form-group"><label>Transporte / Cómo llegar</label><input type="text" id="act-transport" placeholder="Ej: Uber, Caminando 5min"></div>
+                <div class="form-group"><label>Enlace Web (Opcional)</label><input type="url" id="act-link" placeholder="https://..."></div>
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="act-currency">Moneda</label>
@@ -429,15 +519,14 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label id="label-act-cost">Costo</label>
+                        <label id="label-act-cost">Costo Estimado</label>
                         <input type="number" id="act-cost" min="0" step="0.01" value="0" required>
                     </div>
                 </div>
                 
-                <!-- BOTONES CON CANCELAR -->
                 <div class="form-row">
-                    <button type="button" class="btn-secondary" onclick="closeModal('activity-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
-                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar Actividad</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('activity-modal')" style="flex:1; margin-top:1.5rem; margin-right:5px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:2; margin-top:1.5rem; margin-left:5px;">Guardar</button>
                 </div>
             </form>
         </div>
@@ -451,20 +540,16 @@
                 <button class="close-modal" onclick="closeModal('shared-expense-modal')">&times;</button>
             </div>
             <form onsubmit="saveSharedExpense(event)">
-                <!-- GRID DE ICONOS PARA GASTOS COMPARTIDOS -->
                 <div class="form-group">
                     <label>Categoría</label>
                     <div class="icon-grid" id="shared-icon-grid"></div>
                     <input type="hidden" id="shared-icon" value="fa-star">
                 </div>
 
-                <div class="form-group"><label>Descripción (Opcional)</label><input type="text" id="shared-desc" placeholder="Ej: Hotel Noche 1"></div>
-                
-                <!-- CAMPOS: LUGAR Y SITIO WEB -->
-                <div class="form-group"><label>Lugar</label><input type="text" id="shared-location" placeholder="Ej: Restaurante Central, París"></div>
+                <div class="form-group"><label>Descripción</label><input type="text" id="shared-desc" placeholder="Ej: Hotel Noche 1, Cena Grupal"></div>
+                <div class="form-group"><label>Lugar</label><input type="text" id="shared-location" placeholder="Nombre del establecimiento"></div>
                 <div class="form-group"><label>Sitio Web</label><input type="url" id="shared-link" placeholder="https://..."></div>
                 
-                <!-- SELECTOR DE MONEDA Y COSTO -->
                 <div class="form-row">
                     <div class="form-group">
                         <label>Moneda</label>
@@ -475,12 +560,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Costo</label>
+                        <label>Costo Total</label>
                         <input type="number" id="shared-cost" step="0.01" required>
                     </div>
                 </div>
 
-                <!-- BOTONES CON CANCELAR -->
                 <div class="form-row">
                     <button type="button" class="btn-secondary" onclick="closeModal('shared-expense-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar</button>
@@ -497,16 +581,14 @@
                 <button class="close-modal" onclick="closeModal('personal-expense-modal')">&times;</button>
             </div>
             <form onsubmit="savePersonalExpense(event)">
-                <!-- GRID DE ICONOS PARA GASTOS PERSONALES -->
                 <div class="form-group">
                     <label>Categoría</label>
                     <div class="icon-grid" id="personal-icon-grid"></div>
                     <input type="hidden" id="personal-icon" value="fa-star">
                 </div>
 
-                <div class="form-group"><label>Descripción (Opcional)</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Compras"></div>
+                <div class="form-group"><label>Descripción</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Antojos"></div>
                 
-                <!-- SELECTOR DE MONEDA Y COSTO -->
                 <div class="form-row">
                     <div class="form-group">
                         <label>Moneda</label>
@@ -522,7 +604,6 @@
                     </div>
                 </div>
 
-                <!-- BOTONES CON CANCELAR -->
                 <div class="form-row">
                     <button type="button" class="btn-secondary" onclick="closeModal('personal-expense-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar</button>
@@ -541,9 +622,9 @@
             
             <form onsubmit="handleUserSubmit(event)">
                 <input type="hidden" id="edit-user-id">
-                <div class="form-group"><label>Nombre</label><input type="text" id="user-name" required></div>
+                <div class="form-group"><label>Nombre Completo</label><input type="text" id="user-name" required></div>
                 <div class="form-group"><label>Email</label><input type="email" id="user-email" required></div>
-                <div class="form-group"><label>Contraseña</label><input type="password" id="user-pass" placeholder="Dejar vacío para mantener actual" ></div>
+                <div class="form-group"><label>Contraseña</label><input type="password" id="user-pass" placeholder="Dejar vacío para mantener" ></div>
                 <div class="form-row">
                     <button type="button" class="btn-secondary" onclick="closeModal('users-modal')" style="flex:1; margin-top:1rem; margin-right:5px;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:2; margin-top:1rem; margin-left:5px;">Guardar Usuario</button>
@@ -551,7 +632,7 @@
             </form>
             
             <hr style="margin: 1.5rem 0;">
-            <h4>Usuarios Existentes (Clic para editar)</h4>
+            <h4 style="font-size:0.9rem; color:var(--gray); margin-bottom:0.5rem;">Lista de Usuarios (Clic para editar)</h4>
             <ul id="users-list-ul" style="list-style:none; max-height:200px; overflow-y:auto; font-size:0.9rem; padding:0;"></ul>
         </div>
     </div>
@@ -579,15 +660,15 @@
     <div class="modal-overlay" id="rate-modal">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h3>Editar Tipos de Cambio</h3>
+                <h3>Tipos de Cambio</h3>
                 <button class="close-modal" onclick="closeModal('rate-modal')">&times;</button>
             </div>
             <div class="form-group">
-                <label>Cambio USD a Local (1 USD = ? <span id="rate-modal-symbol"></span>)</label>
+                <label>USD a Local (1 USD = ? <span id="rate-modal-symbol"></span>)</label>
                 <input type="number" id="new-exchange-rate" step="0.01" required>
             </div>
             <div class="form-group">
-                <label>Cambio USD a Colones (1 USD = ? Colones)</label>
+                <label>USD a Colones (1 USD = ? CRC)</label>
                 <input type="number" id="new-crc-rate" step="1" value="540">
             </div>
             <div class="form-row">
@@ -601,7 +682,7 @@
     <div id="toast-area"></div>
 
     <script>
-        // --- CONFIGURACIÓN DE CATEGORÍAS PARA EL MENÚ VISUAL ---
+        // --- CONFIGURACIÓN DE CATEGORÍAS ---
         const CATEGORIES = [
             { id: 'fa-plane', label: 'Vuelos', cat: 'transport' },
             { id: 'fa-utensils', label: 'Comida', cat: 'food' },
@@ -612,14 +693,15 @@
             { id: 'fa-bus', label: 'Bus/Taxi', cat: 'transport' },
             { id: 'fa-shopping-bag', label: 'Compras', cat: 'shopping' },
             { id: 'fa-ticket-alt', label: 'Entradas', cat: 'culture' },
+            { id: 'fa-coffee', label: 'Café', cat: 'food' },
             { id: 'fa-star', label: 'General', cat: 'general' }
         ];
 
-        // --- CREDENCIALES AUTOMATICAS ---
+        // --- CREDENCIALES SUPABASE ---
         const AUTO_URL = "https://orinqfthcxrzcjgkmrmd.supabase.co";
         const AUTO_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yaW5xZnRoY3hyemNqZ2ttcm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MDcyMzksImV4cCI6MjA4NTk4MzIzOX0.fzAlGiGozWJsFROtg0cbSymHWlUKkb-eQpNXpVRIOPY";
 
-        // --- VARIABLES GLOBALES ---
+        // --- ESTADO GLOBAL ---
         let supabaseClient = null;
         let currentUser = null;
         let currentTripId = null;
@@ -631,10 +713,18 @@
         let personalExpenses = [];
         let activeDayIndex = 0;
         
-        // Variable para controlar la edición de gastos diarios
         let editingDailyItemIndex = -1;
-        // Variable para controlar la edición de gastos personales
         let editingPersonalExpenseIndex = -1;
+
+        // --- TEMPLATES ---
+        function createTemplateDay(dateString) {
+            return {
+                date: dateString,
+                activities: [],
+                expenses: { food: 0, transport: 0, tickets: 0 },
+                daily_items: [] 
+            };
+        }
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -645,7 +735,7 @@
                 const { createClient } = window.supabase;
                 supabaseClient = createClient(url, key);
                 
-                // Verificar conexión
+                // Ping para verificar conexión
                 const { error } = await supabaseClient.from('app_users').select('id').limit(1);
                 if(error) throw error;
 
@@ -662,18 +752,44 @@
                 showAuthPanel();
 
             } catch (e) {
-                console.error(e);
-                alert("Error de conexión. Asegúrate de haber ejecutado el SQL en Supabase.");
+                console.error("Error inicialización:", e);
+                showToast("Error de conexión a la base de datos.", "error");
             }
         });
 
-        // --- AUTH PANEL LOGIC ---
+        // --- UI HELPERS ---
         function showAuthPanel() {
             document.getElementById('auth-panel').style.display = 'block';
             document.getElementById('dashboard-panel').style.display = 'none';
             document.getElementById('planner-panel').style.display = 'none';
         }
 
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            if(id === 'personal-expense-modal') editingPersonalExpenseIndex = -1;
+        }
+
+        function showToast(msg, type='success') {
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            
+            let icon = type === 'success' ? '<i class="fas fa-check-circle" style="color:#2ecc71"></i>' : '<i class="fas fa-exclamation-circle" style="color:#e74c3c"></i>';
+            
+            t.innerHTML = `${icon} <span>${msg}</span>`;
+            document.getElementById('toast-area').appendChild(t);
+            
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(10px)';
+                setTimeout(() => t.remove(), 300);
+            }, 3000);
+        }
+
+        // --- AUTH LOGIC ---
         async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
@@ -702,7 +818,7 @@
             const pass = document.getElementById('reg-pass').value;
 
             const { data: exist } = await supabaseClient.from('app_users').select('id').eq('email', email).single();
-            if(exist) return showToast('Email ya registrado', 'error');
+            if(exist) return showToast('El correo ya está registrado', 'error');
 
             const { count } = await supabaseClient.from('app_users').select('*', { count: 'exact', head: true });
             const role = count === 0 ? 'admin' : 'user';
@@ -711,9 +827,9 @@
                 full_name: name, email: email, password: pass, role: role
             });
 
-            if(error) showToast('Error registrando', 'error');
+            if(error) showToast('Error al registrar', 'error');
             else {
-                showToast('Cuenta creada', 'success');
+                showToast('Cuenta creada exitosamente', 'success');
                 closeModal('register-modal');
             }
         }
@@ -721,13 +837,16 @@
         function initApp() {
             document.getElementById('auth-panel').style.display = 'none';
             document.getElementById('dashboard-panel').style.display = 'block';
-            const h1 = document.querySelector('header p');
-            if(h1) h1.innerText = `Hola, ${currentUser.full_name}`;
+            const p = document.querySelector('header p');
+            if(p) p.innerText = `Hola, ${currentUser.full_name}`;
             
+            const adminBtn = document.getElementById('btn-manage-users');
             if(currentUser.role === 'admin') {
                 document.body.classList.add('admin-mode');
+                if(adminBtn) adminBtn.style.display = 'inline-block';
             } else {
                 document.body.classList.remove('admin-mode');
+                if(adminBtn) adminBtn.style.display = 'none';
             }
 
             loadDashboard();
@@ -742,17 +861,17 @@
         // --- DASHBOARD ---
         async function loadDashboard() {
             const listContainer = document.getElementById('trips-list-container');
-            listContainer.innerHTML = '<p style="text-align:center; width:100%;">Cargando...</p>';
+            listContainer.innerHTML = '<div style="text-align:center; width:100%; padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando viajes...</div>';
 
             const { data, error } = await supabaseClient.from('trips').select('*').order('created_at', { ascending: false });
 
             if(error) {
-                listContainer.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+                listContainer.innerHTML = `<div style="text-align:center; color:red;">Error cargando viajes: ${error.message}</div>`;
                 return;
             }
 
             if(!data || data.length === 0) {
-                listContainer.innerHTML = '<p style="text-align:center; color:var(--gray);">No tienes viajes guardados aún.</p>';
+                listContainer.innerHTML = '<div style="text-align:center; color:var(--gray); padding:2rem;">No tienes viajes guardados aún. ¡Crea el primero!</div>';
                 return;
             }
 
@@ -766,14 +885,16 @@
                 card.className = 'trip-card';
                 card.onclick = () => loadTrip(trip.id, trip);
 
-                const deleteBtn = (currentUser.role === 'admin') ? 
-                    `<button class="btn-icon-small" onclick="event.stopPropagation(); deleteTrip(${trip.id})" title="Borrar"><i class="fas fa-trash"></i></button>` : '';
-
+                const isAdmin = currentUser.role === 'admin';
+                
                 card.innerHTML = `
-                    <div class="trip-card-actions">${deleteBtn}</div>
+                    <div class="trip-card-actions">
+                        <button class="btn-icon-small" onclick="event.stopPropagation(); openEditTripModal(${trip.id})" title="Editar Fechas"><i class="fas fa-pen"></i></button>
+                        ${isAdmin ? `<button class="btn-icon-small delete" onclick="event.stopPropagation(); deleteTrip(${trip.id})" title="Borrar"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
                     <h3>${dest}</h3>
-                    <p><i class="far fa-calendar"></i> Inicio: ${dates}</p>
-                    <p style="font-size:0.75rem; color:#aaa;">ID: ${trip.id}</p>
+                    <p><i class="far fa-calendar"></i> ${dates}</p>
+                    <p style="font-size:0.75rem; color:#aaa; margin-top:5px;">ID: ${trip.id}</p>
                 `;
                 listContainer.appendChild(card);
             });
@@ -802,18 +923,17 @@
             const exRate = parseFloat(document.getElementById('exchange-rate').value);
             const crcRateVal = parseFloat(document.getElementById('crc-rate').value);
 
+            if(new Date(start) > new Date(end)) {
+                showToast('La fecha de inicio debe ser anterior a la final', 'error');
+                return;
+            }
+
             const daysList = [];
             let current = new Date(start);
             const endDateObj = new Date(end);
             while (current <= endDateObj) {
                 const dateString = current.toISOString().split('T')[0];
-                // AGREGAMOS daily_items VACÍO PARA EL NUEVO SISTEMA
-                daysList.push({ 
-                    date: dateString, 
-                    activities: [], 
-                    expenses: { food: 0, transport: 0, tickets: 0 },
-                    daily_items: [] 
-                });
+                daysList.push(createTemplateDay(dateString));
                 current.setDate(current.getDate() + 1);
             }
 
@@ -823,30 +943,31 @@
                 days: daysList
             };
 
-            const { data, error } = await supabaseClient.from('trips').insert({
+            const { error } = await supabaseClient.from('trips').insert({
                 user_id: currentUser.id, 
                 destination: dest,
                 trip_data: newTripData,
                 shared_expenses: []
-            }).select();
+            });
 
             if(error) {
                 console.error("Error DB:", error);
-                alert('Error creando viaje: ' + error.message + '\nAsegúrate de tener la columna user_id en la tabla trips.');
+                showToast('Error creando viaje: ' + error.message, 'error');
             } else {
                 showToast('Viaje creado', 'success');
                 backToDashboard();
             }
         }
 
-        // --- CARGAR VIAJE (CORE) ---
+        // --- PLANIFICADOR PRINCIPAL ---
         async function loadTrip(id, tripObj) {
             currentTripId = id;
             appData = tripObj.trip_data || appData;
-            // Aseguramos compatibilidad con viajes viejos que no tienen daily_items
+            // Compatibilidad hacia atrás
             appData.days = appData.days.map(d => ({
                 ...d,
-                daily_items: d.daily_items || []
+                daily_items: d.daily_items || [],
+                expenses: d.expenses || { food:0, transport:0, tickets:0 }
             }));
             
             sharedExpenses = tripObj.shared_expenses || [];
@@ -863,40 +984,6 @@
             showPlanner();
         }
 
-        // --- FUNCIÓN DELETE TRIP CON BORRADO EN CASCADA ---
-        async function deleteTrip(id) {
-            if (currentUser.role !== 'admin') {
-                showToast('Solo el administrador puede borrar viajes.', 'error');
-                return;
-            }
-
-            if(!confirm("¿Estás seguro de borrar este viaje? Se eliminarán todos los gastos y datos asociados.")) return;
-
-            try {
-                const { error: expensesError } = await supabaseClient
-                    .from('user_trip_expenses')
-                    .delete()
-                    .eq('trip_id', id);
-
-                if (expensesError) throw expensesError;
-
-                const { error: tripError } = await supabaseClient
-                    .from('trips')
-                    .delete()
-                    .eq('id', id);
-
-                if (tripError) throw tripError;
-
-                showToast('Viaje borrado exitosamente', 'success');
-                loadDashboard();
-
-            } catch (error) {
-                console.error(error);
-                showToast('Error borrando: ' + error.message, 'error');
-            }
-        }
-
-        // --- UI PLANNER ---
         function showPlanner() {
             document.getElementById('setup-trip-form').style.display = 'none';
             document.getElementById('dashboard-panel').style.display = 'none';
@@ -927,13 +1014,15 @@
                 btn.className = `tab-btn ${index === activeDayIndex ? 'active' : ''}`;
                 btn.onclick = () => { 
                     activeDayIndex = index; 
-                    editingDailyItemIndex = -1; // Resetear edición al cambiar de día
+                    editingDailyItemIndex = -1;
                     renderTabs(); 
                     renderActiveDay(); 
                 };
                 btn.innerHTML = `<span>Día ${index + 1}</span><span class="tab-date">${shortDate}</span>`;
                 nav.appendChild(btn);
             });
+            
+            // Tab Resumen
             const totalBtn = document.createElement('button');
             totalBtn.className = `tab-btn ${activeDayIndex === appData.days.length ? 'active' : ''}`;
             totalBtn.onclick = () => { activeDayIndex = appData.days.length; renderTabs(); renderActiveDay(); };
@@ -946,22 +1035,18 @@
 
             const container = document.getElementById('tab-content');
             const day = appData.days[activeDayIndex];
-            
             const symbol = appData.currencySymbol;
             const rate = appData.exchangeRate || 1;
             const crcRate = appData.crcRate || 0;
 
-            // --- CÁLCULO DE TOTALES DEL DÍA ---
+            // --- CÁLCULOS ---
             let dayTotalUSD = 0;
             day.activities.forEach(act => { dayTotalUSD += convertToUSD(act.cost, act.currency); });
             dayTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
             dayTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
             dayTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
             
-            // ACTUALIZADO: Cálculo de daily_items considerando su moneda individual
-            const dailyItemsTotalUSD = (day.daily_items || []).reduce((acc, item) => {
-                return acc + convertToUSD(item.cost, item.currency);
-            }, 0);
+            const dailyItemsTotalUSD = (day.daily_items || []).reduce((acc, item) => acc + convertToUSD(item.cost, item.currency), 0);
             dayTotalUSD += dailyItemsTotalUSD;
 
             const daySharedExpenses = sharedExpenses.filter(exp => exp.dayIndex === undefined || exp.dayIndex === activeDayIndex);
@@ -975,10 +1060,10 @@
             const fullDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
             const capitalDate = fullDate.charAt(0).toUpperCase() + fullDate.slice(1);
 
-            // --- RENDERIZADO DE GASTOS COMPARTIDOS (FILTRADO POR DÍA) ---
-            let sharedHTML = `<h4 style="margin-bottom:10px; color:var(--accent);"><i class="fas fa-users"></i> Gastos Compartidos (Día ${activeDayIndex+1})</h4>`;
+            // --- HTML GENERATION ---
+            let sharedHTML = `<h4 style="margin-bottom:12px; color:var(--accent); font-size:0.9rem;"><i class="fas fa-users"></i> Gastos Compartidos (Día ${activeDayIndex+1})</h4>`;
             const daySharedTotalUSD = daySharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
-            sharedHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Total del Día: $${daySharedTotalUSD.toFixed(2)} USD</div>`;
+            sharedHTML += `<div style="font-size:0.8rem; margin-bottom:10px; color:#555;">Subtotal: $${daySharedTotalUSD.toFixed(2)} USD</div>`;
             
             sharedExpenses.forEach((exp, globalIdx) => {
                 if (exp.dayIndex !== undefined && exp.dayIndex !== activeDayIndex) return;
@@ -986,34 +1071,32 @@
                 const displayIcon = exp.icon || 'fa-receipt';
                 const desc = exp.desc || 'Gasto';
                 const currSym = getCurrencySymbol(exp.currency);
-                const loc = exp.location ? `<div class="activity-meta" style="font-size:0.8rem; margin-top:4px;"><i class="fas fa-map-marker-alt" style="color:var(--danger)"></i> ${exp.location}</div>` : '';
-                const link = exp.link ? `<div class="activity-meta" style="font-size:0.8rem;"><i class="fas fa-globe" style="color:var(--primary)"></i> <a href="${exp.link}" target="_blank" style="color:var(--secondary);">Sitio Web</a></div>` : '';
-                const delBtn = (currentUser.role === 'admin') ? 
-                    `<i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteSharedExpense(${globalIdx})"></i>` : '';
                 
+                const delBtn = (currentUser.role === 'admin') ? 
+                    `<i class="fas fa-trash" style="color:#ff7675; cursor:pointer; margin-left:8px;" onclick="deleteSharedExpense(${globalIdx})"></i>` : '';
+
                 sharedHTML += `
                     <div class="expense-row-list">
                         <div class="expense-details-col" style="flex:1;">
-                            <div style="display:flex; align-items:center; gap:6px; font-weight:600;">
+                            <div style="display:flex; align-items:center; gap:8px; font-weight:600;">
                                 <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
                             </div>
-                            ${loc}
-                            ${link}
+                            ${exp.location ? `<div style="font-size:0.75rem; color:var(--gray);"><i class="fas fa-map-marker-alt"></i> ${exp.location}</div>` : ''}
                         </div>
                         <div style="text-align:right;">
-                            <div>${currSym}${parseFloat(exp.cost).toFixed(2)}</div>
+                            <div style="font-weight:bold;">${currSym}${parseFloat(exp.cost).toFixed(2)}</div>
                             ${delBtn}
                         </div>
                     </div>`;
             });
             if(currentUser.role === 'admin') {
-                sharedHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:5px;" onclick="openModal('shared-expense-modal')">+ Gasto Compartido</button>`;
+                sharedHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:8px;" onclick="openModal('shared-expense-modal')">+ Agregar Compartido</button>`;
             }
 
-            // --- GASTOS PERSONALES ---
-            let personalHTML = `<h4 style="margin-bottom:10px; color:var(--primary); margin-top:20px;"><i class="fas fa-user-tag"></i> Mis Gastos Personales</h4>`;
+            // --- PERSONAL EXPENSES ---
+            let personalHTML = `<h4 style="margin-bottom:12px; color:var(--primary); font-size:0.9rem; margin-top:10px;"><i class="fas fa-user-tag"></i> Mis Gastos Personales</h4>`;
             const personalTotalUSD = personalExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
-            personalHTML += `<div style="font-size:0.9rem; margin-bottom:5px;">Mi Total: $${personalTotalUSD.toFixed(2)} USD</div>`;
+            personalHTML += `<div style="font-size:0.8rem; margin-bottom:10px; color:#555;">Mi Total: $${personalTotalUSD.toFixed(2)} USD</div>`;
 
             personalExpenses.forEach((exp, idx) => {
                 const iconClass = getIconColorClass(exp.icon);
@@ -1021,27 +1104,25 @@
                 const desc = exp.desc || 'Gasto';
                 const currSym = getCurrencySymbol(exp.currency);
 
-                // ACTUALIZADO: Se agregó botón Editar (lápiz)
                 personalHTML += `
                     <div class="expense-row-list">
-                        <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex:1;">
                             <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
                         </div>
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <span>${currSym}${parseFloat(exp.cost).toFixed(2)}</span>
-                            <i class="fas fa-pen daily-expense-edit" style="cursor:pointer;" onclick="editPersonalExpense(${idx})" title="Editar"></i>
-                            <i class="fas fa-trash daily-expense-delete" style="color:red; cursor:pointer;" onclick="deletePersonalExpense(${idx})" title="Eliminar"></i>
+                            <span style="font-weight:bold;">${currSym}${parseFloat(exp.cost).toFixed(2)}</span>
+                            <i class="fas fa-pen daily-expense-edit" onclick="editPersonalExpense(${idx})"></i>
+                            <i class="fas fa-trash daily-expense-delete" onclick="deletePersonalExpense(${idx})"></i>
                         </div>
                     </div>`;
             });
-            personalHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:5px;" onclick="openModal('personal-expense-modal')">+ Gasto Personal</button>`;
+            personalHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:8px;" onclick="openModal('personal-expense-modal')">+ Agregar Personal</button>`;
 
-            // --- NUEVO: RENDERIZADO DE LISTA DE GASTOS DIARIOS ---
+            // --- DAILY ITEMS LIST ---
             const items = day.daily_items || [];
             let dailyItemsListHTML = '<div class="daily-expense-list">';
             if (items.length > 0) {
                 items.forEach((item, idx) => {
-                    // Usamos el símbolo de la moneda del ítem
                     const itemSymbol = getCurrencySymbol(item.currency);
                     dailyItemsListHTML += `
                         <div class="daily-expense-list-item">
@@ -1049,32 +1130,32 @@
                             <div style="display:flex; align-items:center;">
                                 <span class="daily-expense-cost">${itemSymbol}${parseFloat(item.cost).toFixed(2)}</span>
                                 <div class="daily-expense-actions">
-                                    <i class="fas fa-pen daily-expense-edit" onclick="editDailyItem(${idx})" title="Editar"></i>
-                                    <i class="fas fa-trash daily-expense-delete" onclick="deleteDailyItem(${idx})" title="Eliminar"></i>
+                                    <i class="fas fa-pen daily-expense-edit" onclick="editDailyItem(${idx})"></i>
+                                    <i class="fas fa-trash daily-expense-delete" onclick="deleteDailyItem(${idx})"></i>
                                 </div>
                             </div>
                         </div>
                     `;
                 });
             } else {
-                dailyItemsListHTML += `<div style="font-size:0.8rem; color:var(--gray); font-style:italic; padding:5px 0;">No hay gastos detallados en este día.</div>`;
+                dailyItemsListHTML += `<div style="font-size:0.8rem; color:var(--gray); font-style:italic; padding:5px 0;">Sin gastos detallados.</div>`;
             }
             dailyItemsListHTML += '</div>';
 
+            // --- INPUTS DAILY ITEMS ---
             const isEditing = editingDailyItemIndex >= 0;
-            const btnText = isEditing ? "Guardar Cambios" : "Añadir";
+            const btnText = isEditing ? "Guardar" : "Añadir";
             const inputNameVal = isEditing ? day.daily_items[editingDailyItemIndex].name : "";
             const inputCostVal = isEditing ? day.daily_items[editingDailyItemIndex].cost : "";
-            // NUEVO: Recuperar la moneda si está editando
             const inputCurrencyVal = isEditing ? (day.daily_items[editingDailyItemIndex].currency || 'local') : 'local';
 
             container.innerHTML = `
                 <div class="day-total-header">
                     <div class="day-title-section"><i class="far fa-calendar-alt"></i> ${capitalDate}</div>
                     <div class="totals-grid">
-                        <div class="total-row"><span class="currency-label">USD</span><div class="currency-values"><span class="val-day">$${dayTotalUSD.toFixed(2)}</span> | <span class="val-trip">Viaje: $${tripTotals.usd.toFixed(2)}</span></div></div>
-                        ${crcRate > 0 ? `<div class="total-row"><span class="currency-label">Col</span><div class="currency-values"><span class="val-day">₡${dayTotalCRC.toLocaleString()}</span> | <span class="val-trip">Viaje: ₡${tripTotals.crc.toLocaleString()}</span></div></div>` : ''}
-                        <div class="total-row"><span class="currency-label">${symbol}</span><div class="currency-values"><span class="val-day">${formatMoney(dayTotalLocal)}</span> | <span class="val-trip">Viaje: ${formatMoney(tripTotals.local)}</span></div></div>
+                        <div class="total-row"><span class="currency-label">USD</span><div class="currency-values"><span class="val-day">$${dayTotalUSD.toFixed(2)}</span> <span class="val-trip">| Viaje: $${tripTotals.usd.toFixed(2)}</span></div></div>
+                        ${crcRate > 0 ? `<div class="total-row"><span class="currency-label">Col</span><div class="currency-values"><span class="val-day">₡${dayTotalCRC.toLocaleString()}</span> <span class="val-trip">| Viaje: ₡${tripTotals.crc.toLocaleString()}</span></div></div>` : ''}
+                        <div class="total-row"><span class="currency-label">${symbol}</span><div class="currency-values"><span class="val-day">${formatMoney(dayTotalLocal)}</span> <span class="val-trip">| Viaje: ${formatMoney(tripTotals.local)}</span></div></div>
                     </div>
                 </div>
 
@@ -1084,36 +1165,36 @@
                 <ul class="activity-list">${renderActivitiesListHTML(day, activeDayIndex, symbol, rate, crcRate)}</ul>
                 
                 <div class="daily-expenses">
-                    <div class="expense-title"><i class="fas fa-list-alt"></i> Gastos Diarios</div>
+                    <div class="expense-title"><i class="fas fa-list-ul"></i> Desglose de Gastos Diarios</div>
                     ${dailyItemsListHTML}
                     
-                    <div style="display:flex; gap:5px; margin-bottom:15px; border-top:1px dashed #ccc; padding-top:10px; flex-wrap:wrap; align-items:center;">
+                    <div style="display:flex; gap:8px; margin-bottom:15px; border-top:1px dashed #ccc; padding-top:15px; flex-wrap:wrap; align-items:center; background:#fcfcfc; padding:10px; border-radius:8px;">
                         <input type="text" id="new-daily-name" placeholder="Detalle (ej: Almuerzo)" value="${inputNameVal}" style="flex:2; min-width:120px;">
                         <input type="number" id="new-daily-cost" placeholder="Costo" value="${inputCostVal}" style="flex:1; min-width:80px;">
                         
-                        <!-- NUEVO: SELECTOR DE MONEDA PARA GASTOS DIARIOS -->
-                        <select id="new-daily-currency" style="flex:0.8; min-width:90px; padding:0.7rem; border:2px solid #dfe6e9; border-radius:8px;">
+                        <select id="new-daily-currency" style="flex:0.8; min-width:90px;">
                             <option value="local" ${inputCurrencyVal === 'local' ? 'selected' : ''}>Local</option>
                             <option value="usd" ${inputCurrencyVal === 'usd' ? 'selected' : ''}>USD</option>
                             <option value="crc" ${inputCurrencyVal === 'crc' ? 'selected' : ''}>CRC</option>
                         </select>
 
                         <button class="btn-primary tight" onclick="addDailyItem()">${btnText}</button>
-                        ${isEditing ? `<button class="btn-secondary tight" style="margin-top:0;" onclick="cancelEditDailyItem()">Cancelar</button>` : ''}
+                        ${isEditing ? `<button class="btn-secondary tight" style="margin-top:0;" onclick="cancelEditDailyItem()">X</button>` : ''}
                     </div>
 
-                    <div class="expense-title" style="margin-top:15px;">Totales Rápidos</div>
+                    <div class="expense-title" style="margin-top:20px;">Totales Rápidos (Agrupados)</div>
                     <div class="expense-grid">
-                        <div class="expense-input"><label><i class="fas fa-utensils"></i> Comida</label><input type="number" min="0" step="0.5" value="${day.expenses.food}" onchange="updateExpense(${activeDayIndex}, 'food', this.value)"></div>
-                        <div class="expense-input"><label><i class="fas fa-bus"></i> Transporte</label><input type="number" min="0" step="0.5" value="${day.expenses.transport}" onchange="updateExpense(${activeDayIndex}, 'transport', this.value)"></div>
-                        <div class="expense-input"><label><i class="fas fa-ticket-alt"></i> Entradas</label><input type="number" min="0" step="0.5" value="${day.expenses.tickets}" onchange="updateExpense(${activeDayIndex}, 'tickets', this.value)"></div>
+                        <div class="expense-input"><label><i class="fas fa-utensils act-icon-food"></i> Comida</label><input type="number" min="0" step="0.5" value="${day.expenses.food}" onchange="updateExpense(${activeDayIndex}, 'food', this.value)"></div>
+                        <div class="expense-input"><label><i class="fas fa-bus act-icon-transport"></i> Transporte</label><input type="number" min="0" step="0.5" value="${day.expenses.transport}" onchange="updateExpense(${activeDayIndex}, 'transport', this.value)"></div>
+                        <div class="expense-input"><label><i class="fas fa-ticket-alt act-icon-culture"></i> Entradas</label><input type="number" min="0" step="0.5" value="${day.expenses.tickets}" onchange="updateExpense(${activeDayIndex}, 'tickets', this.value)"></div>
                     </div>
                 </div>
             `;
         }
 
         function renderActivitiesListHTML(day, dayIndex, symbol, rate, crcRate) {
-            if (day.activities.length === 0) return `<li style="text-align:center; color:var(--gray); padding:2rem; border:1px dashed #ccc; border-radius:8px;">Sin actividades planeadas.</li>`;
+            if (day.activities.length === 0) return `<li style="text-align:center; color:var(--gray); padding:2rem; border:1px dashed #ccc; border-radius:8px; background:#fafafa;">Sin actividades planeadas para este día.</li>`;
+            
             return day.activities.map((act, actIndex) => {
                 let iconClass = getIconColorClass(act.icon);
                 const iconToDisplay = act.icon || 'fa-star';
@@ -1127,7 +1208,6 @@
                 const isOwner = act.created_by === currentUser.id;
                 const isAdmin = currentUser.role === 'admin';
                 const canDelete = isOwner || isAdmin;
-                const deleteBtnStyle = canDelete ? "" : "opacity:0.3; cursor:not-allowed;";
 
                 return `
                 <li class="activity-item">
@@ -1135,30 +1215,29 @@
                         <div class="activity-time">${act.time}</div>
                         <div class="activity-details">
                             <div class="activity-name"><i class="fas ${iconToDisplay} ${iconClass}"></i> ${act.name}</div>
-                            <div class="activity-meta"><i class="fas fa-map-marker-alt"></i> ${act.location}</div>
-                            ${act.howToGet ? `<div class="activity-meta"><i class="fas fa-directions"></i> <span>${act.howToGet}</span></div>` : ''}
-                            ${act.link ? `<div class="activity-meta"><i class="fas fa-globe"></i> <a href="${act.link}" target="_blank" class="activity-link">Visitar sitio web</a></div>` : ''}
+                            <div class="activity-meta"><i class="fas fa-map-marker-alt" style="color:var(--danger)"></i> ${act.location}</div>
+                            ${act.howToGet ? `<div class="activity-meta"><i class="fas fa-directions" style="color:var(--secondary)"></i> ${act.howToGet}</div>` : ''}
+                            ${act.link ? `<div class="activity-meta"><i class="fas fa-globe" style="color:var(--primary)"></i> <a href="${act.link}" target="_blank" style="color:var(--secondary); text-decoration:none; font-weight:600;">Ver Web</a></div>` : ''}
                             <div style="margin-top: 8px;">
                                 <div class="activity-meta" style="color: var(--dark); font-weight: bold; margin-bottom:2px;">
-                                    <i class="fas fa-coins"></i> ${originalSymbol}${costVal.toFixed(2)} <span style="font-size:0.8em; font-weight:normal; color:var(--gray); text-transform:uppercase;">(${currCode})</span>
+                                    <i class="fas fa-coins" style="color:var(--accent)"></i> ${originalSymbol}${costVal.toFixed(2)} <span style="font-size:0.8em; font-weight:normal; color:var(--gray); text-transform:uppercase;">(${currCode})</span>
                                 </div>
-                                <div style="font-size:0.85em; color:var(--gray); padding-left: 20px;">
+                                <div style="font-size:0.8em; color:var(--gray); padding-left: 22px; line-height:1.4;">
                                     <div>→ $${costUSD.toFixed(2)} USD</div>
-                                    ${crcRate > 0 ? `<div>→ ₡${costCRC.toLocaleString()} Colones</div>` : ''}
-                                    ${currCode !== 'local' ? `<div>→ ${formatMoney(costLocal)} ${symbol} (Equivalente)</div>` : ''}
+                                    ${crcRate > 0 ? `<div>→ ₡${costCRC.toLocaleString()} CRC</div>` : ''}
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="activity-actions">
                         <button class="btn-sm btn-edit" onclick="openModal('activity-modal', ${dayIndex}, ${actIndex})"><i class="fas fa-pen"></i> Editar</button>
-                        <button class="btn-sm btn-delete" style="${deleteBtnStyle}" onclick="deleteActivity(${dayIndex}, ${actIndex})" title="${canDelete ? 'Borrar' : 'Solo puedes borrar lo que tú añades'}"><i class="fas fa-trash"></i> Borrar</button>
+                        <button class="btn-sm btn-delete" onclick="deleteActivity(${dayIndex}, ${actIndex})" ${!canDelete ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}><i class="fas fa-trash"></i> Borrar</button>
                     </div>
                 </li>`;
             }).join('');
         }
 
-        // --- LOGICA DE DATOS ---
+        // --- LOGIC HELPERS ---
         function convertToUSD(amount, currencyCode) {
             const val = parseFloat(amount) || 0;
             const code = currencyCode || 'local';
@@ -1181,54 +1260,46 @@
         
         function getIconColorClass(iconId) {
             if(!iconId) return '';
-            if(['fa-utensils'].includes(iconId)) return 'act-icon-food';
+            if(['fa-utensils', 'fa-coffee'].includes(iconId)) return 'act-icon-food';
             if(['fa-bus','fa-taxi','fa-subway','fa-plane'].includes(iconId)) return 'act-icon-transport';
             if(['fa-landmark','fa-university','fa-ticket-alt'].includes(iconId)) return 'act-icon-culture';
             if(['fa-bed'].includes(iconId)) return 'act-icon-lodging';
             if(['fa-tree'].includes(iconId)) return 'act-icon-nature';
             if(['fa-shopping-bag'].includes(iconId)) return 'act-icon-shopping';
             if(['fa-glass-cheers'].includes(iconId)) return 'act-icon-party';
-            return '';
+            return 'act-icon-general';
         }
 
+        // --- CRUD ---
         function updateExpense(dayIndex, type, value) {
             appData.days[dayIndex].expenses[type] = parseFloat(value) || 0;
             saveToStorage();
         }
 
-        // --- FUNCIONES PARA LISTA DE GASTOS DIARIOS ---
-        
+        // Daily Items
         function editDailyItem(itemIndex) {
             editingDailyItemIndex = itemIndex;
             renderActiveDay();
         }
-
         function cancelEditDailyItem() {
             editingDailyItemIndex = -1;
             renderActiveDay();
         }
-
         async function addDailyItem() {
             const nameInput = document.getElementById('new-daily-name');
             const costInput = document.getElementById('new-daily-cost');
-            const currencyInput = document.getElementById('new-daily-currency'); // NUEVO
+            const currencyInput = document.getElementById('new-daily-currency');
             
             const name = nameInput.value.trim();
             const cost = parseFloat(costInput.value);
-            const currency = currencyInput ? currencyInput.value : 'local'; // NUEVO
+            const currency = currencyInput ? currencyInput.value : 'local';
             
-            if (!name) {
-                alert("Escribe el detalle del gasto");
-                return;
-            }
-            if (isNaN(cost) || cost <= 0) {
-                alert("Escribe un costo válido");
+            if (!name || isNaN(cost) || cost <= 0) {
+                showToast('Verifica nombre y costo', 'error');
                 return;
             }
 
-            if (!appData.days[activeDayIndex].daily_items) {
-                appData.days[activeDayIndex].daily_items = [];
-            }
+            if (!appData.days[activeDayIndex].daily_items) appData.days[activeDayIndex].daily_items = [];
 
             if (editingDailyItemIndex >= 0) {
                 appData.days[activeDayIndex].daily_items[editingDailyItemIndex] = { name, cost, currency };
@@ -1236,40 +1307,26 @@
             } else {
                 appData.days[activeDayIndex].daily_items.push({ name, cost, currency });
             }
-            
             await saveToStorage();
         }
-
         async function deleteDailyItem(itemIndex) {
-            if(confirm("¿Borrar este gasto de la lista?")) {
+            if(confirm("¿Borrar este gasto?")) {
                 appData.days[activeDayIndex].daily_items.splice(itemIndex, 1);
-                if (editingDailyItemIndex === itemIndex) {
-                    editingDailyItemIndex = -1;
-                } else if (itemIndex < editingDailyItemIndex) {
-                    editingDailyItemIndex--;
-                }
+                if (editingDailyItemIndex === itemIndex) editingDailyItemIndex = -1;
+                else if (itemIndex < editingDailyItemIndex) editingDailyItemIndex--;
                 await saveToStorage();
             }
         }
 
-        // --- FUNCIONES PARA GASTOS PERSONALES (NUEVO: EDITAR) ---
-
+        // Personal Expenses
         function editPersonalExpense(idx) {
             editingPersonalExpenseIndex = idx;
             const exp = personalExpenses[idx];
-            
-            // Rellenar campos
             document.getElementById('personal-desc').value = exp.desc || '';
             document.getElementById('personal-cost').value = exp.cost;
             document.getElementById('personal-currency').value = exp.currency || 'local';
-            
-            // Seleccionar icono
             renderIconGrid('personal-icon-grid', 'personal-icon', exp.icon || 'fa-star');
-            
-            // Cambiar título del modal
             document.getElementById('personal-expense-title').textContent = 'Editar Gasto Personal';
-            
-            // Abrir modal
             openModal('personal-expense-modal');
         }
 
@@ -1283,103 +1340,71 @@
             const expenseData = { icon, desc, cost, currency };
 
             if (editingPersonalExpenseIndex >= 0) {
-                // Actualizar existente
                 personalExpenses[editingPersonalExpenseIndex] = expenseData;
-                editingPersonalExpenseIndex = -1; // Resetear
+                editingPersonalExpenseIndex = -1;
             } else {
-                // Crear nuevo
                 personalExpenses.push(expenseData);
             }
             
-            // Restaurar título del modal para futuros usos
             document.getElementById('personal-expense-title').textContent = 'Mi Gasto Personal';
-            
             const saved = await saveToStorage();
             if (saved) closeModal('personal-expense-modal');
         }
-
         async function deletePersonalExpense(idx) {
             if(confirm("¿Borrar gasto personal?")) {
                 personalExpenses.splice(idx, 1);
-                // Si estábamos editando este item, cancelar edición
                 if(editingPersonalExpenseIndex === idx) editingPersonalExpenseIndex = -1;
                 else if(idx < editingPersonalExpenseIndex) editingPersonalExpenseIndex--;
-                
                 await saveToStorage();
             }
         }
 
-        // --- FIX: ROBUST SAVE LOGIC ---
+        // Activities & Shared Expenses
         async function saveToStorage() {
             if(!currentTripId || !supabaseClient) return false;
             
             try {
-                console.log("Guardando datos...");
                 const cleanAppData = JSON.parse(JSON.stringify(appData));
-
                 const { error: tripError } = await supabaseClient.from('trips')
-                    .update({ 
-                        trip_data: cleanAppData, 
-                        shared_expenses: sharedExpenses 
-                    })
+                    .update({ trip_data: cleanAppData, shared_expenses: sharedExpenses })
                     .eq('id', currentTripId);
-
                 if (tripError) throw tripError;
 
                 const { data: existingExpense } = await supabaseClient.from('user_trip_expenses')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .eq('trip_id', currentTripId)
-                    .maybeSingle();
+                    .select('id').eq('user_id', currentUser.id).eq('trip_id', currentTripId).maybeSingle();
                 
                 let expenseError;
-
                 if (existingExpense) {
                     const res = await supabaseClient.from('user_trip_expenses')
-                        .update({ personal_expenses: personalExpenses })
-                        .eq('id', existingExpense.id);
+                        .update({ personal_expenses: personalExpenses }).eq('id', existingExpense.id);
                     expenseError = res.error;
                 } else {
                     const res = await supabaseClient.from('user_trip_expenses')
-                        .insert({ 
-                            user_id: currentUser.id, 
-                            trip_id: currentTripId, 
-                            personal_expenses: personalExpenses 
-                        });
+                        .insert({ user_id: currentUser.id, trip_id: currentTripId, personal_expenses: personalExpenses });
                     expenseError = res.error;
                 }
-                
                 if (expenseError) throw expenseError;
 
                 updateTotalCost();
                 renderActiveDay();
-                
                 return true; 
-                
             } catch (error) {
-                console.error("Error completo al guardar:", error);
-                showToast('Error al guardar: ' + error.message, 'error');
+                console.error(error);
+                showToast('Error guardando datos', 'error');
                 return false; 
             }
         }
 
-        // --- FUNCIONES GENÉRICAS PARA GRID DE ICONOS ---
         function renderIconGrid(containerId, inputId, preselectedIcon = 'fa-star') {
             const container = document.getElementById(containerId);
             if(!container) return;
             container.innerHTML = ''; 
-            
             CATEGORIES.forEach(cat => {
                 const btn = document.createElement('div');
                 btn.className = 'icon-btn';
                 btn.dataset.icon = cat.id;
-                btn.dataset.cat = cat.cat;
                 btn.onclick = () => selectIcon(cat.id, inputId);
-                
-                btn.innerHTML = `
-                    <i class="fas ${cat.id}"></i>
-                    <span>${cat.label}</span>
-                `;
+                btn.innerHTML = `<i class="fas ${cat.id}"></i><span>${cat.label}</span>`;
                 container.appendChild(btn);
             });
             selectIcon(preselectedIcon, inputId);
@@ -1397,7 +1422,7 @@
             }
         }
 
-        // --- GESTIÓN DE MODALES ---
+        // --- ACTIVITIES ---
         function openModal(modalId, param1 = null, param2 = null) {
             const modal = document.getElementById(modalId);
             if(modal) modal.classList.add('active');
@@ -1405,8 +1430,6 @@
             if (modalId === 'activity-modal') {
                 document.getElementById('modal-day-index').value = param1;
                 document.getElementById('modal-activity-index').value = param2 !== null ? param2 : '';
-                const form = document.getElementById('activity-form');
-                
                 renderIconGrid('activity-icon-grid', 'act-icon');
 
                 if (param2 !== null) { 
@@ -1421,30 +1444,23 @@
                     document.getElementById('act-cost').value = act.cost;
                     document.getElementById('act-currency').value = act.currency || 'local';
                 } else { 
-                    document.getElementById('modal-title').textContent = 'Añadir Actividad';
-                    form.reset();
+                    document.getElementById('modal-title').textContent = 'Nueva Actividad';
+                    document.getElementById('activity-form').reset();
                     selectIcon('fa-star', 'act-icon');
                     document.getElementById('act-cost').value = 0;
                     document.getElementById('act-currency').value = 'local';
                 }
             } 
             else if (modalId === 'shared-expense-modal') {
-                const headerTitle = document.querySelector('#shared-expense-modal .modal-header h3');
-                if(headerTitle) headerTitle.textContent = `Gasto Compartido (Día ${activeDayIndex + 1})`;
-
                 renderIconGrid('shared-icon-grid', 'shared-icon');
                 document.getElementById('shared-cost').value = '';
                 document.getElementById('shared-desc').value = '';
                 document.getElementById('shared-currency').value = 'local';
                 document.getElementById('shared-location').value = '';
                 document.getElementById('shared-link').value = '';
+                document.getElementById('shared-expense-title').textContent = `Gasto Compartido (Día ${activeDayIndex+1})`;
             }
             else if (modalId === 'personal-expense-modal') {
-                // Solo reiniciar si NO estamos en modo edición (la edición llama a openModal pero llenará los datos después)
-                // Para simplificar, asumimos que si abrimos el modal normalmente es para nuevo gasto.
-                // La función editPersonalExpense maneja la preparación de datos para editar.
-                
-                // Si el índice es -1, es nuevo
                 if(editingPersonalExpenseIndex === -1) {
                     renderIconGrid('personal-icon-grid', 'personal-icon');
                     document.getElementById('personal-cost').value = '';
@@ -1455,15 +1471,6 @@
             }
         }
 
-        function closeModal(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            // Resetear estados de edición si se cierra el modal
-            if(id === 'personal-expense-modal') editingPersonalExpenseIndex = -1;
-            if(id === 'activity-modal') {
-                // El título se resetea en openModal, pero aseguremos limpieza visual si es necesario
-            }
-        }
-        
         async function saveActivity(e) {
             e.preventDefault();
             const dayIndex = parseInt(document.getElementById('modal-day-index').value);
@@ -1483,9 +1490,7 @@
 
             if (actIndexStr !== '') {
                 const originalAct = appData.days[dayIndex].activities[parseInt(actIndexStr)];
-                if(originalAct && originalAct.created_by) {
-                    activityData.created_by = originalAct.created_by;
-                }
+                if(originalAct && originalAct.created_by) activityData.created_by = originalAct.created_by;
                 appData.days[dayIndex].activities[parseInt(actIndexStr)] = activityData;
             } else {
                 appData.days[dayIndex].activities.push(activityData);
@@ -1493,9 +1498,7 @@
             }
             
             const saved = await saveToStorage();
-            if (saved) {
-                closeModal('activity-modal');
-            }
+            if (saved) closeModal('activity-modal');
         }
 
         async function deleteActivity(dayIndex, actIndex) {
@@ -1503,10 +1506,7 @@
             const isOwner = act.created_by === currentUser.id;
             const isAdmin = currentUser.role === 'admin';
 
-            if (!isOwner && !isAdmin) {
-                showToast("No puedes borrar esta actividad. Solo puedes borrar lo que tú añades.", "error");
-                return;
-            }
+            if (!isOwner && !isAdmin) return showToast('No puedes borrar esta actividad', 'error');
 
             if(confirm("¿Eliminar esta actividad?")) {
                 appData.days[dayIndex].activities.splice(actIndex, 1);
@@ -1514,7 +1514,6 @@
             }
         }
 
-        // --- GESTION GASTOS COMPARTIDOS (ADMIN) ---
         async function saveSharedExpense(e) {
             e.preventDefault();
             const icon = document.getElementById('shared-icon').value;
@@ -1530,50 +1529,104 @@
             if (saved) closeModal('shared-expense-modal');
         }
         async function deleteSharedExpense(globalIdx) {
-            if(currentUser.role !== 'admin') {
-                showToast("Solo el admin puede borrar gastos compartidos.", "error");
-                return;
-            }
+            if(currentUser.role !== 'admin') return showToast('Solo admin puede borrar esto', 'error');
             if(confirm("¿Borrar gasto compartido?")) {
                 sharedExpenses.splice(globalIdx, 1);
                 await saveToStorage();
             }
         }
 
-        // --- GESTION USUARIOS (ADMIN) - ACTUALIZADO PARA EDITAR ---
+        // --- EDITAR FECHAS ---
+        function openEditTripModal(tripId) {
+            supabaseClient.from('trips').select('*').eq('id', tripId).single().then(({ data, error }) => {
+                if(!error && data) {
+                    document.getElementById('edit-trip-id').value = data.id;
+                    document.getElementById('edit-destination').value = data.destination || '';
+                    document.getElementById('edit-start-date').value = data.trip_data ? data.trip_data.startDate : '';
+                    document.getElementById('edit-end-date').value = data.trip_data ? data.trip_data.endDate : '';
+                    openModal('edit-trip-modal');
+                } else {
+                    showToast('Error cargando datos', 'error');
+                }
+            });
+        }
+
+        async function handleUpdateTrip(e) {
+            e.preventDefault();
+            const tripId = parseInt(document.getElementById('edit-trip-id').value);
+            const newStartDate = document.getElementById('edit-start-date').value;
+            const newEndDate = document.getElementById('edit-end-date').value;
+
+            if(new Date(newStartDate) > new Date(newEndDate)) return showToast('Fechas inválidas', 'error');
+
+            try {
+                const { data: currentTrip } = await supabaseClient.from('trips').select('*').eq('id', tripId).single();
+                if(!currentTrip) throw new Error("Viaje no encontrado");
+
+                const oldDays = currentTrip.trip_data.days || [];
+                const newDays = [];
+                let current = new Date(newStartDate);
+                const end = new Date(newEndDate);
+
+                while (current <= end) {
+                    const dateStr = current.toISOString().split('T')[0];
+                    const existingDay = oldDays.find(d => d.date === dateStr);
+                    newDays.push(existingDay ? existingDay : createTemplateDay(dateStr));
+                    current.setDate(current.getDate() + 1);
+                }
+
+                const updatedTripData = { ...currentTrip.trip_data, startDate: newStartDate, endDate: newEndDate, days: newDays };
+
+                const { error } = await supabaseClient.from('trips').update({ trip_data: updatedTripData }).eq('id', tripId);
+                if(error) throw error;
+
+                showToast('Fechas actualizadas', 'success');
+                closeModal('edit-trip-modal');
+                // Reload current trip if open
+                if(currentTripId === tripId) {
+                    appData = updatedTripData;
+                    showPlanner();
+                } else {
+                    loadDashboard();
+                }
+
+            } catch (err) {
+                console.error(err);
+                showToast('Error actualizando fechas', 'error');
+            }
+        }
+
+        // --- GESTION USUARIOS (ADMIN) ---
         async function openUserModal() {
             clearUserForm();
             loadUsersList();
             openModal('users-modal');
         }
-
         async function loadUsersList() {
             const { data } = await supabaseClient.from('app_users').select('*');
             const list = document.getElementById('users-list-ul');
             list.innerHTML = '';
-            
+            if(!data) return;
             data.forEach(u => {
                 const li = document.createElement('li');
                 li.className = 'user-list-item';
                 li.innerHTML = `
-                    <span onclick="editUser(${u.id})" style="flex:1; cursor:pointer; font-weight:600;">${u.full_name} <small style="font-weight:400; color:#888;">(${u.email})</small></span>
-                    <div class="user-list-actions">
-                        <span style="font-size:0.8rem; background:${u.role==='admin'?'#fff3cd':'#f1f2f6'}; padding:2px 6px; border-radius:4px;">${u.role}</span>
-                        ${u.email !== 'admin@quinchitico.com' ? `<button class="btn-sm btn-delete" onclick="event.stopPropagation(); deleteUser(${u.id})"><i class="fas fa-trash"></i></button>` : ''}
+                    <span onclick="editUser(${u.id})" style="flex:1; cursor:pointer; font-weight:500;">${u.full_name} <small style="font-weight:400; color:#888;">(${u.email})</small></span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:0.7rem; padding:2px 8px; border-radius:10px; background:${u.role==='admin'?'#fff3cd':'#e3f2fd'}; color:${u.role==='admin'?'#856404':'#0d47a1'}; font-weight:bold;">${u.role}</span>
+                        ${u.email !== 'admin@quinchitico.com' ? `<i class="fas fa-trash" style="color:var(--danger); cursor:pointer;" onclick="deleteUser(${u.id})"></i>` : ''}
                     </div>
                 `;
                 list.appendChild(li);
             });
         }
-
         function clearUserForm() {
             document.getElementById('edit-user-id').value = '';
             document.getElementById('user-name').value = '';
             document.getElementById('user-email').value = '';
-            document.getElementById('user-pass').value = '';
+            document.getElementById('user-pass').value = ''; 
             document.querySelector('#users-modal form button[type="submit"]').innerText = 'Guardar Usuario';
         }
-
         async function editUser(id) {
             const { data } = await supabaseClient.from('app_users').select('*').eq('id', id).single();
             if(data) {
@@ -1582,90 +1635,82 @@
                 document.getElementById('user-email').value = data.email;
                 document.getElementById('user-pass').value = ''; 
                 document.querySelector('#users-modal form button[type="submit"]').innerText = 'Actualizar Usuario';
-                showToast('Editando usuario: ' + data.full_name, 'success');
             }
         }
-
         async function handleUserSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('edit-user-id').value;
             const name = document.getElementById('user-name').value;
             const email = document.getElementById('user-email').value;
             const pass = document.getElementById('user-pass').value;
-
+            const updateData = { full_name: name, email: email };
+            if(pass) updateData.password = pass;
+            
+            let error;
             if(id) {
-                const updateData = { full_name: name, email: email };
-                if(pass) updateData.password = pass;
-                
-                const { error } = await supabaseClient.from('app_users').update(updateData).eq('id', id);
-                if(error) showToast('Error actualizando', 'error');
-                else {
-                    showToast('Usuario actualizado', 'success');
-                    clearUserForm();
-                    loadUsersList();
-                }
+                const res = await supabaseClient.from('app_users').update(updateData).eq('id', id);
+                error = res.error;
             } else {
-                const { error } = await supabaseClient.from('app_users').insert({
-                    full_name: name, email: email, password: pass, role: 'user'
-                });
-                if(error) showToast('Error creando', 'error');
-                else {
-                    showToast('Usuario creado', 'success');
-                    clearUserForm();
-                    loadUsersList();
-                }
+                const res = await supabaseClient.from('app_users').insert({ ...updateData, password: pass, role: 'user' });
+                error = res.error;
+            }
+            
+            if(error) showToast('Error en operación', 'error');
+            else {
+                showToast('Éxito', 'success');
+                clearUserForm();
+                loadUsersList();
             }
         }
-
         async function deleteUser(id) {
-            if(!confirm("¿Borrar este usuario?")) return;
+            if(!confirm("¿Borrar usuario?")) return;
             const { error } = await supabaseClient.from('app_users').delete().eq('id', id);
             if(error) showToast('Error borrando', 'error');
             else loadUsersList();
+        }
+        async function deleteTrip(id) {
+            if(!confirm("¿Borrar viaje completamente?")) return;
+            const { error: expensesError } = await supabaseClient.from('user_trip_expenses').delete().eq('trip_id', id);
+            if (expensesError) throw expensesError;
+            const { error: tripError } = await supabaseClient.from('trips').delete().eq('id', id);
+            if (tripError) throw tripError;
+            showToast('Viaje borrado', 'success');
+            backToDashboard();
         }
 
         // --- RESUMEN ---
         function renderSummarySheet() {
             const container = document.getElementById('tab-content');
-            const symbol = appData.currencySymbol;
-            const rate = appData.exchangeRate || 1;
-            const crcRate = appData.crcRate || 0;
             const totals = calculateTripTotals();
             const breakdown = calculateCategoryBreakdown();
-
             const dailyTotals = appData.days.map((day, idx) => {
                 let totalUSD = 0;
                 day.activities.forEach(a => totalUSD += convertToUSD(a.cost, a.currency));
-                totalUSD += (parseFloat(day.expenses.food || 0) / rate);
-                totalUSD += (parseFloat(day.expenses.transport || 0) / rate);
-                totalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
-                // ACTUALIZADO: Incluir conversión de daily_items en el resumen
+                totalUSD += (parseFloat(day.expenses.food || 0) / appData.exchangeRate);
+                totalUSD += (parseFloat(day.expenses.transport || 0) / appData.exchangeRate);
+                totalUSD += (parseFloat(day.expenses.tickets || 0) / appData.exchangeRate);
                 const dailyItemsUSD = (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
                 totalUSD += dailyItemsUSD;
-
-                sharedExpenses.filter(exp => exp.dayIndex === idx).forEach(exp => {
-                    totalUSD += convertToUSD(exp.cost, exp.currency);
-                });
-
+                sharedExpenses.filter(exp => exp.dayIndex === idx).forEach(exp => totalUSD += convertToUSD(exp.cost, exp.currency));
                 return { idx: idx + 1, date: day.date, total: totalUSD };
             }).sort((a,b) => b.total - a.total);
 
             container.innerHTML = `
                 <div class="summary-card">
-                    <h2 class="summary-title">Resumen Financiero</h2>
+                    <h2 class="summary-title">Resumen Financiero Total</h2>
                     <div class="big-totals">
-                        <div class="big-total-item"><span class="bt-label">Dólares (USD)</span><span class="bt-value">$${totals.usd.toFixed(2)}</span></div>
-                        ${crcRate > 0 ? `<div class="big-total-item"><span class="bt-label">Colones (CRC)</span><span class="bt-value">₡${totals.crc.toLocaleString()}</span></div>` : ''}
-                        <div class="big-total-item"><span class="bt-label">${symbol} (Local)</span><span class="bt-value">${formatMoney(totals.local)}</span></div>
+                        <div class="big-total-item"><span class="bt-label">Total USD</span><span class="bt-value">$${totals.usd.toFixed(2)}</span></div>
+                        ${appData.crcRate > 0 ? `<div class="big-total-item"><span class="bt-label">Total CRC</span><span class="bt-value">₡${totals.crc.toLocaleString()}</span></div>` : ''}
+                        <div class="big-total-item"><span class="bt-label">Total Local</span><span class="bt-value">${formatMoney(totals.local)}</span></div>
                     </div>
                     <div class="summary-grid">
                         <div class="breakdown-section">
-                            <h3>Por Categoría</h3>
-                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-utensils" style="color:#e17055;"></i> Comida</span><span class="cat-val">$${breakdown.foodUSD.toFixed(2)}</span></div>
-                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-bus" style="color:#0984e3;"></i> Transporte</span><span class="cat-val">$${breakdown.transportUSD.toFixed(2)}</span></div>
-                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-ticket-alt" style="color:#fdcb6e;"></i> Entradas</span><span class="cat-val">$${breakdown.ticketsUSD.toFixed(2)}</span></div>
-                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-list" style="color:#b2bec3;"></i> Actividades</span><span class="cat-val">$${breakdown.activitiesUSD.toFixed(2)}</span></div>
-                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-receipt" style="color:#2ecc71;"></i> Otros Diarios</span><span class="cat-val">$${breakdown.dailyItemsUSD.toFixed(2)}</span></div>
+                            <h3>Por Categoría (USD)</h3>
+                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-utensils act-icon-food"></i> Comida</span><span class="cat-val">$${breakdown.foodUSD.toFixed(2)}</span></div>
+                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-bus act-icon-transport"></i> Transporte</span><span class="cat-val">$${breakdown.transportUSD.toFixed(2)}</span></div>
+                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-ticket-alt act-icon-culture"></i> Entradas</span><span class="cat-val">$${breakdown.ticketsUSD.toFixed(2)}</span></div>
+                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-list act-icon-general"></i> Actividades</span><span class="cat-val">$${breakdown.activitiesUSD.toFixed(2)}</span></div>
+                            <div class="breakdown-row"><span class="cat-name"><i class="fas fa-coins act-icon-general"></i> Gastos Diarios</span><span class="cat-val">$${breakdown.dailyItemsUSD.toFixed(2)}</span></div>
                         </div>
                         <div class="breakdown-section">
                             <h3>Días más costosos</h3>
@@ -1682,11 +1727,8 @@
                 foodUSD += (parseFloat(day.expenses.food || 0) / rate);
                 transportUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 ticketsUSD += (parseFloat(day.expenses.tickets || 0) / rate);
-                day.activities.forEach(act => { activitiesUSD += convertToUSD(act.cost, act.currency); });
-                
-                // ACTUALIZADO: Cálculo correcto de daily_items por moneda
-                const itemsUSD = (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
-                dailyItemsUSD += itemsUSD;
+                day.activities.forEach(act => activitiesUSD += convertToUSD(act.cost, act.currency));
+                dailyItemsUSD += (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
             });
             return { foodUSD, transportUSD, ticketsUSD, activitiesUSD, dailyItemsUSD };
         }
@@ -1696,38 +1738,25 @@
             const rate = appData.exchangeRate || 1;
             const crcRate = appData.crcRate || 0;
             appData.days.forEach(day => {
-                day.activities.forEach(act => { grandTotalUSD += convertToUSD(act.cost, act.currency); });
+                day.activities.forEach(act => grandTotalUSD += convertToUSD(act.cost, act.currency));
                 grandTotalUSD += (parseFloat(day.expenses.food || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.transport || 0) / rate);
                 grandTotalUSD += (parseFloat(day.expenses.tickets || 0) / rate);
-                
-                // ACTUALIZADO: Totales del viaje considerando moneda de cada ítem diario
                 const itemsUSD = (day.daily_items || []).reduce((acc, i) => acc + convertToUSD(i.cost, i.currency), 0);
                 grandTotalUSD += itemsUSD;
             });
-            sharedExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
-            personalExpenses.forEach(exp => { grandTotalUSD += convertToUSD(exp.cost, exp.currency); });
-
+            sharedExpenses.forEach(exp => grandTotalUSD += convertToUSD(exp.cost, exp.currency));
+            personalExpenses.forEach(exp => grandTotalUSD += convertToUSD(exp.cost, exp.currency));
             return { usd: grandTotalUSD, crc: grandTotalUSD * crcRate, local: grandTotalUSD * rate };
         }
 
         function updateTotalCost() {
             const tripTotals = calculateTripTotals();
             document.getElementById('grand-total').textContent = '$' + tripTotals.usd.toFixed(2) + ' USD';
-            const crcRate = appData.crcRate || 0;
-            if(crcRate > 0) {
+            if(appData.crcRate > 0) {
                 document.getElementById('grand-total-crc').textContent = '₡' + tripTotals.crc.toLocaleString() + ' Colones';
                 document.getElementById('grand-total-crc').style.display = 'block';
             } else { document.getElementById('grand-total-crc').style.display = 'none'; }
-        }
-
-        // --- UTILIDADES ---
-        function showToast(msg, type='success') {
-            const t = document.createElement('div');
-            t.className = `toast ${type}`;
-            t.innerText = msg;
-            document.getElementById('toast-area').appendChild(t);
-            setTimeout(() => t.remove(), 3000);
         }
 
         function fillCurrencyFromPreset() {
@@ -1744,9 +1773,8 @@
             document.getElementById('rate-modal-symbol').textContent = appData.currencySymbol || 'local';
             document.getElementById('new-exchange-rate').value = appData.exchangeRate;
             document.getElementById('new-crc-rate').value = appData.crcRate || 540;
-            document.getElementById('rate-modal').classList.add('active');
+            openModal('rate-modal');
         }
-
         async function saveNewRates() {
             const newRate = parseFloat(document.getElementById('new-exchange-rate').value);
             const newCrcRate = parseFloat(document.getElementById('new-crc-rate').value);
@@ -1754,13 +1782,205 @@
                 appData.exchangeRate = newRate;
                 appData.crcRate = newCrcRate > 0 ? newCrcRate : 0;
                 await saveToStorage();
-                document.getElementById('display-rate').textContent = newRate;
-                document.getElementById('display-crc-rate').textContent = newCrcRate;
                 closeModal('rate-modal');
                 showToast('Tipos de cambio actualizados', 'success');
             } else {
-                alert("El tipo de cambio debe ser mayor a 0");
+                showToast('El tipo de cambio debe ser mayor a 0', 'error');
             }
+        }
+
+        // --- EXCEL FUNCTIONS ---
+        function downloadExcel() {
+            if (typeof XLSX === 'undefined') return showToast("Librería Excel no cargada", "error");
+
+            const totals = calculateTripTotals();
+            const breakdown = calculateCategoryBreakdown();
+            
+            const summaryData = [
+                ["INFORME DE VIAJE"],
+                ["Destino", appData.destination],
+                ["Fecha Inicio", appData.startDate],
+                ["Fecha Fin", appData.endDate],
+                ["", ""],
+                ["TOTALES FINANCIEROS"],
+                ["Total USD", totals.usd],
+                ["Total Local (" + appData.currencySymbol + ")", totals.local],
+                ["Total CRC", totals.crc],
+                ["", ""],
+                ["DESGLOSE POR CATEGÍA (USD)"],
+                ["Comida", breakdown.foodUSD],
+                ["Transporte", breakdown.transportUSD],
+                ["Entradas", breakdown.ticketsUSD],
+                ["Actividades", breakdown.activitiesUSD],
+                ["Otros Diarios", breakdown.dailyItemsUSD]
+            ];
+            const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+
+            const itineraryData = [["Fecha", "Hora", "Actividad", "Ubicación", "Costo Original", "Moneda", "Costo USD"]];
+            appData.days.forEach(day => {
+                day.activities.forEach(act => {
+                    const costUSD = convertToUSD(act.cost, act.currency);
+                    const sym = getCurrencySymbol(act.currency);
+                    itineraryData.push([day.date, act.time, act.name, act.location, `${sym}${parseFloat(act.cost).toFixed(2)}`, act.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+                });
+            });
+            const wsItinerary = XLSX.utils.aoa_to_sheet(itineraryData);
+
+            const expensesData = [["Fecha", "Tipo", "Descripción", "Costo Original", "Moneda", "Costo USD"]];
+            appData.days.forEach(day => {
+                (day.daily_items || []).forEach(item => {
+                    const costUSD = convertToUSD(item.cost, item.currency);
+                    const sym = getCurrencySymbol(item.currency);
+                    expensesData.push([day.date, "Diario", item.name, `${sym}${parseFloat(item.cost).toFixed(2)}`, item.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+                });
+            });
+            sharedExpenses.forEach(exp => {
+                const costUSD = convertToUSD(exp.cost, exp.currency);
+                const sym = getCurrencySymbol(exp.currency);
+                const dayDate = (exp.dayIndex !== undefined && appData.days[exp.dayIndex]) ? appData.days[exp.dayIndex].date : "Varios";
+                expensesData.push([dayDate, "Compartido", exp.desc || exp.location, `${sym}${parseFloat(exp.cost).toFixed(2)}`, exp.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+            });
+            personalExpenses.forEach(exp => {
+                const costUSD = convertToUSD(exp.cost, exp.currency);
+                const sym = getCurrencySymbol(exp.currency);
+                expensesData.push(["Todo el viaje", "Personal", exp.desc, `${sym}${parseFloat(exp.cost).toFixed(2)}`, exp.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+            });
+            const wsExpenses = XLSX.utils.aoa_to_sheet(expensesData);
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, wsSummary, "Resumen");
+            XLSX.utils.book_append_sheet(wb, wsItinerary, "Itinerario");
+            XLSX.utils.book_append_sheet(wb, wsExpenses, "Gastos Detallados");
+
+            const safeName = appData.destination.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            XLSX.writeFile(wb, `${safeName}_viaje.xlsx`);
+        }
+
+        function uploadExcel(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array', cellDates: true});
+                    
+                    const wsItinerary = workbook.Sheets["Itinerario"];
+                    if(!wsItinerary) throw new Error("Falta la hoja 'Itinerario'");
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(wsItinerary, {header: 1}); 
+                    const rows = jsonData.slice(1);
+                    
+                    const tempDaysMap = {};
+                    rows.forEach(row => {
+                        let dateVal = row[0];
+                        if (dateVal instanceof Date) dateVal = dateVal.toISOString().split('T')[0];
+                        else if (typeof dateVal === 'number') {
+                            const excelDate = new Date(Math.round((dateVal - 25569)*86400*1000));
+                            dateVal = excelDate.toISOString().split('T')[0];
+                        }
+                        if (!dateVal) return;
+
+                        if (!tempDaysMap[dateVal]) {
+                            tempDaysMap[dateVal] = { date: dateVal, activities: [], daily_items: [], expenses: { food: 0, transport: 0, tickets: 0 } };
+                        }
+
+                        const act = {
+                            time: row[1] || "00:00",
+                            name: row[2] || "Actividad",
+                            location: row[3] || "",
+                            cost: parseFloat(row[4]) || 0,
+                            currency: parseCurrencyCode(row[5]),
+                            howToGet: "", link: "", icon: 'fa-star', created_by: currentUser.id
+                        };
+                        tempDaysMap[dateVal].activities.push(act);
+                    });
+
+                    const newDaysArray = [];
+                    const allDates = Object.keys(tempDaysMap).sort();
+                    if(allDates.length > 0) {
+                        appData.startDate = allDates[0];
+                        appData.endDate = allDates[allDates.length - 1];
+                    }
+
+                    allDates.forEach(date => {
+                        const existingDayIndex = appData.days.findIndex(d => d.date === date);
+                        if(existingDayIndex >= 0) {
+                            tempDaysMap[date].daily_items = appData.days[existingDayIndex].daily_items || [];
+                            tempDaysMap[date].expenses = appData.days[existingDayIndex].expenses || { food: 0, transport: 0, tickets: 0 };
+                        } else {
+                            tempDaysMap[date].daily_items = [];
+                            tempDaysMap[date].expenses = { food: 0, transport: 0, tickets: 0 };
+                        }
+                        newDaysArray.push(tempDaysMap[date]);
+                    });
+
+                    appData.days = newDaysArray;
+
+                    const wsExpenses = workbook.Sheets["Gastos Detallados"];
+                    if (wsExpenses) {
+                        const expenseRows = XLSX.utils.sheet_to_json(wsExpenses, {header: 1}).slice(1);
+                        const newDailyItemsMap = {}; 
+                        const newSharedExpenses = [];
+                        const newPersonalExpenses = [];
+
+                        expenseRows.forEach(row => {
+                            let dateVal = row[0];
+                            if(dateVal instanceof Date) dateVal = dateVal.toISOString().split('T')[0];
+                            else if(typeof dateVal === 'number') {
+                                const excelDate = new Date(Math.round((dateVal - 25569)*86400*1000));
+                                dateVal = excelDate.toISOString().split('T')[0];
+                            }
+
+                            const type = row[1];
+                            const desc = row[2];
+                            const cost = parseFloat(row[3]) || 0;
+                            const currency = parseCurrencyCode(row[4]);
+
+                            if (type === "Diario" && dateVal) {
+                                if(!newDailyItemsMap[dateVal]) newDailyItemsMap[dateVal] = [];
+                                newDailyItemsMap[dateVal].push({ name: desc, cost: cost, currency: currency });
+                            } else if (type === "Compartido") {
+                                let dayIdx = undefined;
+                                if(dateVal && dateVal !== "Varios") {
+                                    const dIdx = appData.days.findIndex(d => d.date === dateVal);
+                                    if(dIdx >= 0) dayIdx = dIdx;
+                                }
+                                newSharedExpenses.push({ desc, cost, currency, icon: 'fa-receipt', location: "", link: "", dayIndex: dayIdx });
+                            } else if (type === "Personal") {
+                                newPersonalExpenses.push({ desc, cost, currency, icon: 'fa-receipt' });
+                            }
+                        });
+
+                        appData.days.forEach(day => {
+                            if(newDailyItemsMap[day.date]) day.daily_items = newDailyItemsMap[day.date];
+                        });
+                        sharedExpenses = newSharedExpenses;
+                        personalExpenses = newPersonalExpenses;
+                    }
+
+                    const saved = await saveToStorage();
+                    if(saved) {
+                        showToast('Excel importado con éxito', 'success');
+                        showPlanner();
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    showToast("Error leyendo Excel: " + err.message, 'error');
+                }
+                input.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function parseCurrencyCode(str) {
+            if(!str) return 'local';
+            const s = str.toString().toLowerCase();
+            if(s.includes('usd') || s.includes('$')) return 'usd';
+            if(s.includes('crc') || s.includes('₡')) return 'crc';
+            return 'local';
         }
     </script>
 </body>
