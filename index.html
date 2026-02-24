@@ -192,7 +192,8 @@
         .personal-expenses-box { border: 1px solid #00cec9; background: #e0fffa; padding: 1.2rem; border-radius: 12px; margin-bottom: 1.5rem; }
         .expense-row-list { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; border-radius: 6px; transition: background 0.2s;}
         .expense-row-list:hover { background: rgba(0,0,0,0.02); }
-        .expense-details-col { display: flex; flex-direction: column; gap: 4px; }
+        .expense-details-col { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .expense-actions-col { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; justify-content: center; padding-left: 10px;}
 
         /* --- SUMMARY --- */
         .summary-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 1.5rem; text-align: center; }
@@ -258,6 +259,11 @@
         .admin-mode .admin-only-btn { display: inline-block; }
         .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; transition: 0.2s; }
         .user-list-item:hover { background: #f9f9f9; }
+        
+        .btn-reorder {
+            background: #eee; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 2px 6px; font-size: 0.7rem; color: #555; transition: 0.2s;
+        }
+        .btn-reorder:hover { background: #ddd; color: #000; }
 
         /* Toast */
         .toast { position: fixed; bottom: 30px; right: 30px; background: #333; color: white; padding: 12px 24px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 300px; word-wrap: break-word; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; }
@@ -539,6 +545,8 @@
                 <button class="close-modal" onclick="closeModal('shared-expense-modal')">&times;</button>
             </div>
             <form onsubmit="saveSharedExpense(event)">
+                <input type="hidden" id="shared-expense-edit-index" value="-1">
+                
                 <div class="form-group">
                     <label>Categoría</label>
                     <div class="icon-grid" id="shared-icon-grid"></div>
@@ -587,6 +595,10 @@
                 </div>
 
                 <div class="form-group"><label>Descripción</label><input type="text" id="personal-desc" placeholder="Ej: Souvenir, Antojos"></div>
+                <!-- NUEVOS CAMPOS PARA DETALLES -->
+                <div class="form-group"><label>Lugar (Opcional)</label><input type="text" id="personal-location" placeholder="Ej: Tienda de regalos"></div>
+                <div class="form-group"><label>Sitio Web (Opcional)</label><input type="url" id="personal-link" placeholder="https://..."></div>
+                <!-- FIN NUEVOS CAMPOS -->
                 
                 <div class="form-row">
                     <div class="form-group">
@@ -714,6 +726,7 @@
         
         let editingDailyItemIndex = -1;
         let editingPersonalExpenseIndex = -1;
+        let editingSharedExpenseIndex = -1; // Nuevo para edicion de compartidos
 
         // --- TEMPLATES ---
         function createTemplateDay(dateString) {
@@ -770,6 +783,7 @@
         function closeModal(id) { 
             document.getElementById(id).classList.remove('active'); 
             if(id === 'personal-expense-modal') editingPersonalExpenseIndex = -1;
+            if(id === 'shared-expense-modal') editingSharedExpenseIndex = -1;
         }
 
         function showToast(msg, type='success') {
@@ -1059,7 +1073,7 @@
             const fullDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
             const capitalDate = fullDate.charAt(0).toUpperCase() + fullDate.slice(1);
 
-            // --- HTML GENERATION ---
+            // --- HTML GENERATION SHARED EXPENSES (UPDATED) ---
             let sharedHTML = `<h4 style="margin-bottom:12px; color:var(--accent); font-size:0.9rem;"><i class="fas fa-users"></i> Gastos Compartidos (Día ${activeDayIndex+1})</h4>`;
             const daySharedTotalUSD = daySharedExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
             sharedHTML += `<div style="font-size:0.8rem; margin-bottom:10px; color:#555;">Subtotal: $${daySharedTotalUSD.toFixed(2)} USD</div>`;
@@ -1070,21 +1084,33 @@
                 const displayIcon = exp.icon || 'fa-receipt';
                 const desc = exp.desc || 'Gasto';
                 const currSym = getCurrencySymbol(exp.currency);
-                
-                const delBtn = (currentUser.role === 'admin') ? 
-                    `<i class="fas fa-trash" style="color:#ff7675; cursor:pointer; margin-left:8px;" onclick="deleteSharedExpense(${globalIdx})"></i>` : '';
+                const isAdmin = currentUser.role === 'admin';
+
+                // Admin Actions (Edit, Reorder, Delete)
+                let adminControls = '';
+                if (isAdmin) {
+                    adminControls = `
+                        <div class="admin-controls" style="margin-top:8px; display:flex; gap:4px; justify-content:flex-end; align-items:center;">
+                            <button class="btn-reorder" onclick="moveSharedExpense(${globalIdx}, -1)" title="Subir" ${globalIdx === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                            <button class="btn-reorder" onclick="moveSharedExpense(${globalIdx}, 1)" title="Bajar"><i class="fas fa-arrow-down"></i></button>
+                            <button class="btn-reorder" style="color:var(--secondary);" onclick="editSharedExpense(${globalIdx})" title="Editar"><i class="fas fa-pen"></i></button>
+                            <button class="btn-reorder" style="color:var(--danger);" onclick="deleteSharedExpense(${globalIdx})" title="Borrar"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                }
 
                 sharedHTML += `
                     <div class="expense-row-list">
-                        <div class="expense-details-col" style="flex:1;">
+                        <div class="expense-details-col">
                             <div style="display:flex; align-items:center; gap:8px; font-weight:600;">
                                 <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
                             </div>
                             ${exp.location ? `<div style="font-size:0.75rem; color:var(--gray);"><i class="fas fa-map-marker-alt"></i> ${exp.location}</div>` : ''}
+                            ${exp.link ? `<div style="font-size:0.75rem; color:var(--secondary);"><i class="fas fa-globe"></i> <a href="${exp.link}" target="_blank" style="color:var(--secondary); text-decoration:none; font-weight:600;">Ver Sitio Web</a></div>` : ''}
                         </div>
-                        <div style="text-align:right;">
+                        <div class="expense-actions-col">
                             <div style="font-weight:bold;">${currSym}${parseFloat(exp.cost).toFixed(2)}</div>
-                            ${delBtn}
+                            ${adminControls}
                         </div>
                     </div>`;
             });
@@ -1092,7 +1118,7 @@
                 sharedHTML += `<button class="btn-primary tight" style="font-size:0.8rem; margin-top:8px;" onclick="openModal('shared-expense-modal')">+ Agregar Compartido</button>`;
             }
 
-            // --- PERSONAL EXPENSES ---
+            // --- HTML GENERATION PERSONAL EXPENSES (UPDATED) ---
             let personalHTML = `<h4 style="margin-bottom:12px; color:var(--primary); font-size:0.9rem; margin-top:10px;"><i class="fas fa-user-tag"></i> Mis Gastos Personales</h4>`;
             const personalTotalUSD = personalExpenses.reduce((a, b) => a + convertToUSD(b.cost, b.currency), 0);
             personalHTML += `<div style="font-size:0.8rem; margin-bottom:10px; color:#555;">Mi Total: $${personalTotalUSD.toFixed(2)} USD</div>`;
@@ -1105,13 +1131,19 @@
 
                 personalHTML += `
                     <div class="expense-row-list">
-                        <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                            <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
+                        <div class="expense-details-col">
+                            <div style="display:flex; align-items:center; gap:8px; font-weight:600;">
+                                <i class="fas ${displayIcon} ${iconClass}"></i> ${desc}
+                            </div>
+                            ${exp.location ? `<div style="font-size:0.75rem; color:var(--gray);"><i class="fas fa-map-marker-alt"></i> ${exp.location}</div>` : ''}
+                            ${exp.link ? `<div style="font-size:0.75rem; color:var(--secondary);"><i class="fas fa-globe"></i> <a href="${exp.link}" target="_blank" style="color:var(--secondary); text-decoration:none; font-weight:600;">Ver Web</a></div>` : ''}
                         </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-weight:bold;">${currSym}${parseFloat(exp.cost).toFixed(2)}</span>
-                            <i class="fas fa-pen daily-expense-edit" onclick="editPersonalExpense(${idx})"></i>
-                            <i class="fas fa-trash daily-expense-delete" onclick="deletePersonalExpense(${idx})"></i>
+                        <div class="expense-actions-col">
+                             <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-weight:bold;">${currSym}${parseFloat(exp.cost).toFixed(2)}</span>
+                                <i class="fas fa-pen daily-expense-edit" onclick="editPersonalExpense(${idx})"></i>
+                                <i class="fas fa-trash daily-expense-delete" onclick="deletePersonalExpense(${idx})"></i>
+                            </div>
                         </div>
                     </div>`;
             });
@@ -1322,6 +1354,8 @@
             editingPersonalExpenseIndex = idx;
             const exp = personalExpenses[idx];
             document.getElementById('personal-desc').value = exp.desc || '';
+            document.getElementById('personal-location').value = exp.location || '';
+            document.getElementById('personal-link').value = exp.link || '';
             document.getElementById('personal-cost').value = exp.cost;
             document.getElementById('personal-currency').value = exp.currency || 'local';
             renderIconGrid('personal-icon-grid', 'personal-icon', exp.icon || 'fa-star');
@@ -1334,9 +1368,11 @@
             const icon = document.getElementById('personal-icon').value;
             const currency = document.getElementById('personal-currency').value;
             const desc = document.getElementById('personal-desc').value;
+            const location = document.getElementById('personal-location').value;
+            const link = document.getElementById('personal-link').value;
             const cost = parseFloat(document.getElementById('personal-cost').value) || 0;
             
-            const expenseData = { icon, desc, cost, currency };
+            const expenseData = { icon, desc, cost, currency, location, link };
 
             if (editingPersonalExpenseIndex >= 0) {
                 personalExpenses[editingPersonalExpenseIndex] = expenseData;
@@ -1358,7 +1394,71 @@
             }
         }
 
-        // Activities & Shared Expenses
+        // --- SHARED EXPENSES (UPDATED WITH EDIT & REORDER) ---
+        function editSharedExpense(idx) {
+            editingSharedExpenseIndex = idx;
+            const exp = sharedExpenses[idx];
+            
+            document.getElementById('shared-expense-edit-index').value = idx;
+            document.getElementById('shared-desc').value = exp.desc || '';
+            document.getElementById('shared-location').value = exp.location || '';
+            document.getElementById('shared-link').value = exp.link || '';
+            document.getElementById('shared-cost').value = exp.cost;
+            document.getElementById('shared-currency').value = exp.currency || 'local';
+            renderIconGrid('shared-icon-grid', 'shared-icon', exp.icon || 'fa-star');
+            document.getElementById('shared-expense-title').textContent = 'Editar Gasto Compartido';
+            
+            openModal('shared-expense-modal');
+        }
+
+        async function saveSharedExpense(e) {
+            e.preventDefault();
+            const icon = document.getElementById('shared-icon').value;
+            const currency = document.getElementById('shared-currency').value;
+            const desc = document.getElementById('shared-desc').value;
+            const location = document.getElementById('shared-location').value;
+            const link = document.getElementById('shared-link').value;
+            const cost = parseFloat(document.getElementById('shared-cost').value) || 0;
+
+            const expenseData = { icon, desc, cost, currency, location, link, dayIndex: activeDayIndex };
+            
+            const editIndex = parseInt(document.getElementById('shared-expense-edit-index').value);
+
+            if (editIndex >= 0) {
+                // Mantener el dayIndex original si estamos editando
+                expenseData.dayIndex = sharedExpenses[editIndex].dayIndex;
+                sharedExpenses[editIndex] = expenseData;
+            } else {
+                sharedExpenses.push(expenseData);
+            }
+            
+            document.getElementById('shared-expense-edit-index').value = "-1";
+            document.getElementById('shared-expense-title').textContent = 'Gasto Compartido';
+            
+            const saved = await saveToStorage();
+            if (saved) closeModal('shared-expense-modal');
+        }
+
+        async function moveSharedExpense(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= sharedExpenses.length) return;
+            
+            // Swap elements
+            [sharedExpenses[index], sharedExpenses[newIndex]] = [sharedExpenses[newIndex], sharedExpenses[index]];
+            
+            await saveToStorage();
+            renderActiveDay();
+        }
+
+        async function deleteSharedExpense(globalIdx) {
+            if(currentUser.role !== 'admin') return showToast('Solo admin puede borrar esto', 'error');
+            if(confirm("¿Borrar gasto compartido?")) {
+                sharedExpenses.splice(globalIdx, 1);
+                await saveToStorage();
+            }
+        }
+
+        // Activities & Shared Expenses Logic Support
         async function saveToStorage() {
             if(!currentTripId || !supabaseClient) return false;
             
@@ -1451,19 +1551,26 @@
                 }
             } 
             else if (modalId === 'shared-expense-modal') {
-                renderIconGrid('shared-icon-grid', 'shared-icon');
-                document.getElementById('shared-cost').value = '';
-                document.getElementById('shared-desc').value = '';
-                document.getElementById('shared-currency').value = 'local';
-                document.getElementById('shared-location').value = '';
-                document.getElementById('shared-link').value = '';
-                document.getElementById('shared-expense-title').textContent = `Gasto Compartido (Día ${activeDayIndex+1})`;
+                const editIdx = parseInt(document.getElementById('shared-expense-edit-index').value);
+                if (editIdx < 0) {
+                    // New Mode
+                    renderIconGrid('shared-icon-grid', 'shared-icon');
+                    document.getElementById('shared-cost').value = '';
+                    document.getElementById('shared-desc').value = '';
+                    document.getElementById('shared-currency').value = 'local';
+                    document.getElementById('shared-location').value = '';
+                    document.getElementById('shared-link').value = '';
+                    document.getElementById('shared-expense-title').textContent = `Gasto Compartido (Día ${activeDayIndex+1})`;
+                }
+                // Edit Mode is handled in editSharedExpense function
             }
             else if (modalId === 'personal-expense-modal') {
                 if(editingPersonalExpenseIndex === -1) {
                     renderIconGrid('personal-icon-grid', 'personal-icon');
                     document.getElementById('personal-cost').value = '';
                     document.getElementById('personal-desc').value = '';
+                    document.getElementById('personal-location').value = '';
+                    document.getElementById('personal-link').value = '';
                     document.getElementById('personal-currency').value = 'local';
                     document.getElementById('personal-expense-title').textContent = 'Mi Gasto Personal';
                 }
@@ -1509,28 +1616,6 @@
 
             if(confirm("¿Eliminar esta actividad?")) {
                 appData.days[dayIndex].activities.splice(actIndex, 1);
-                await saveToStorage();
-            }
-        }
-
-        async function saveSharedExpense(e) {
-            e.preventDefault();
-            const icon = document.getElementById('shared-icon').value;
-            const currency = document.getElementById('shared-currency').value;
-            const desc = document.getElementById('shared-desc').value;
-            const cost = parseFloat(document.getElementById('shared-cost').value) || 0;
-            const location = document.getElementById('shared-location').value;
-            const link = document.getElementById('shared-link').value;
-
-            sharedExpenses.push({ icon, desc, cost, currency, location, link, dayIndex: activeDayIndex });
-            
-            const saved = await saveToStorage();
-            if (saved) closeModal('shared-expense-modal');
-        }
-        async function deleteSharedExpense(globalIdx) {
-            if(currentUser.role !== 'admin') return showToast('Solo admin puede borrar esto', 'error');
-            if(confirm("¿Borrar gasto compartido?")) {
-                sharedExpenses.splice(globalIdx, 1);
                 await saveToStorage();
             }
         }
@@ -1825,24 +1910,24 @@
             });
             const wsItinerary = XLSX.utils.aoa_to_sheet(itineraryData);
 
-            const expensesData = [["Fecha", "Tipo", "Descripción", "Costo Original", "Moneda", "Costo USD"]];
+            const expensesData = [["Fecha", "Tipo", "Descripción", "Ubicación", "Web", "Costo Original", "Moneda", "Costo USD"]];
             appData.days.forEach(day => {
                 (day.daily_items || []).forEach(item => {
                     const costUSD = convertToUSD(item.cost, item.currency);
                     const sym = getCurrencySymbol(item.currency);
-                    expensesData.push([day.date, "Diario", item.name, `${sym}${parseFloat(item.cost).toFixed(2)}`, item.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+                    expensesData.push([day.date, "Diario", item.name, "", "", `${sym}${parseFloat(item.cost).toFixed(2)}`, item.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
                 });
             });
             sharedExpenses.forEach(exp => {
                 const costUSD = convertToUSD(exp.cost, exp.currency);
                 const sym = getCurrencySymbol(exp.currency);
                 const dayDate = (exp.dayIndex !== undefined && appData.days[exp.dayIndex]) ? appData.days[exp.dayIndex].date : "Varios";
-                expensesData.push([dayDate, "Compartido", exp.desc || exp.location, `${sym}${parseFloat(exp.cost).toFixed(2)}`, exp.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+                expensesData.push([dayDate, "Compartido", exp.desc || exp.location, exp.location || "", exp.link || "", `${sym}${parseFloat(exp.cost).toFixed(2)}`, exp.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
             });
             personalExpenses.forEach(exp => {
                 const costUSD = convertToUSD(exp.cost, exp.currency);
                 const sym = getCurrencySymbol(exp.currency);
-                expensesData.push(["Todo el viaje", "Personal", exp.desc, `${sym}${parseFloat(exp.cost).toFixed(2)}`, exp.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
+                expensesData.push(["Todo el viaje", "Personal", exp.desc, exp.location || "", exp.link || "", `${sym}${parseFloat(exp.cost).toFixed(2)}`, exp.currency.toUpperCase(), `$${costUSD.toFixed(2)}`]);
             });
             const wsExpenses = XLSX.utils.aoa_to_sheet(expensesData);
 
@@ -1934,8 +2019,10 @@
 
                             const type = row[1];
                             const desc = row[2];
-                            const cost = parseFloat(row[3]) || 0;
-                            const currency = parseCurrencyCode(row[4]);
+                            const location = row[3] || "";
+                            const link = row[4] || "";
+                            const cost = parseFloat(row[5]) || 0;
+                            const currency = parseCurrencyCode(row[6]);
 
                             if (type === "Diario" && dateVal) {
                                 if(!newDailyItemsMap[dateVal]) newDailyItemsMap[dateVal] = [];
@@ -1946,9 +2033,9 @@
                                     const dIdx = appData.days.findIndex(d => d.date === dateVal);
                                     if(dIdx >= 0) dayIdx = dIdx;
                                 }
-                                newSharedExpenses.push({ desc, cost, currency, icon: 'fa-receipt', location: "", link: "", dayIndex: dayIdx });
+                                newSharedExpenses.push({ desc, cost, currency, icon: 'fa-receipt', location, link, dayIndex: dayIdx });
                             } else if (type === "Personal") {
-                                newPersonalExpenses.push({ desc, cost, currency, icon: 'fa-receipt' });
+                                newPersonalExpenses.push({ desc, cost, currency, icon: 'fa-receipt', location, link });
                             }
                         });
 
@@ -1985,4 +2072,3 @@
 </body>
 </html>
 ```
-
